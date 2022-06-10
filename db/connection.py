@@ -19,6 +19,7 @@ class DB:
             'port': os.getenv("db_port")
         }
 
+        self.__current_user_type = None 
         self.__conn = mysql.connector.connect(**config)
         self.__cursor = self.__conn.cursor()
     
@@ -26,6 +27,20 @@ class DB:
         """Se encarga de la desconeccion con la base de datos cerrando el cursor y luego la coneccion"""
         self.__cursor.close()
         self.__conn.close()
+
+    def setCurrentUserType(self, userType):
+        """
+        setCurrentUserType se encarga de asignar que tipo de usuario se encuentra logeado actualmente en la aplicacion
+        y de esta manera garantizar permisos sobre las acciones que pueda realizar el usuario
+        """
+        self.__current_user_type = userType
+
+    def getCurrentUserType(self):
+        """
+        getCurrentUserType se encarga de devolver el tipo de usuario que se encuentra actualmente logeado 
+        en la aplicacion si no hay un usuario logeado simplemente retornara None
+        """
+        return self.__current_user_type
 
     def migrate(self) -> None:
         """migrate es una funcion que se encarga de crear las tablas en la base de datos si es que estas no existen"""
@@ -115,7 +130,7 @@ class DB:
 
     def commit(self):
         """realiza el commmit para que los cambios se vean reflejados en la base de datos"""
-        self.__cursor.commit()
+        self.__conn.commit()
 
     def queryDB(self, query: str, args: tuple):
         """queryDB es la funcion encargada de ejecutar los querys enviados por otras clases o funciones que lo requieran"""
