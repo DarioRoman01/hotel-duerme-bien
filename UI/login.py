@@ -3,20 +3,19 @@ from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
-from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import Screen, ScreenManager
 
 class LoginLayout(GridLayout):
     def __init__(self, **kwargs,):
         super(LoginLayout, self).__init__(**kwargs)
-        # Set columns
         self.cols = 1
         self.spacing=10
+        self.col_default_width=300
+        self.col_force_default=True
         self.row_force_default=True
         self.row_default_height=40
+        self.pos_hint={'y': -.2, 'x': .3}
 
-        # Add widgets
         self.add_widget(Label(text="username: "))
         self.username = TextInput(multiline=True)
         self.add_widget(self.username)
