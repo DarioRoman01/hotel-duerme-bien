@@ -4,6 +4,8 @@ from kivy.uix.label import Label
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import Screen, ScreenManager
+from db import DB
+from staff import StaffHandler
 
 class LoginLayout(GridLayout):
     def __init__(self, **kwargs,):
@@ -27,7 +29,7 @@ class LoginLayout(GridLayout):
     def press(self, manager):
         username = self.username.text
         pwd = self.pwd.text
-        if username == "admin" and pwd == "admin":
+        if handler.loginUser(username, pwd):
             manager.current = 'main'
         else:
             self.username.text = ""
@@ -40,6 +42,9 @@ class MainScreen(Screen):
     pass
 
 class HotelApp(App):
+    global handler
+    handler = StaffHandler(DB())
+
     def build(self):
         self.__sm = ScreenManager()
         self.__sm.add_widget(LoginScreen(name="login"))

@@ -57,7 +57,6 @@ class StaffHandler:
 
     def loginUser(self, username, pwd):
         """Verifica las credenciales ingresadas por el usuario al momento de hacer login"""
-        
         self.__db.queryDB("""
             SELECT password, type FROM usuario WHERE username = %s
         """, (username,))
