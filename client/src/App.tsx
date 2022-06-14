@@ -16,7 +16,7 @@ const Home: React.FC = () => {
 
 function App() {
   return (
-    <div className="App">
+    <div className="App bg-primary">
       <Routes>
         <Route path='/' element={<Login/>}/>
         <Route path='/home' element={<Home/>}/>

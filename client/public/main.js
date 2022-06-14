@@ -7,6 +7,7 @@ function createWindow() {
     webPreferences: {}
   });
 
+  win.removeMenu()
   win.loadURL('http://localhost:3000');
 }
 
