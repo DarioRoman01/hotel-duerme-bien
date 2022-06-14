@@ -1,3 +1,4 @@
+from typing import Dict
 from db import DB
 import bcrypt
 
@@ -24,8 +25,7 @@ class StaffHandler:
             return "no tiene permisos para realizar esta accion"
 
         self.__db.queryDB("SELECT codigo, username, type from usuarios;")
-        usuarios = self.__db.fetchAll()
-        return usuarios
+        return [User(u[0], u[1], u[2]) for u in self.__db.fetchAll()]
 
     def modifyUser(self, username, newUsername, pwd):
         """se encarga de la modificacion de los usuarios solo se permitira cambiar su nombre de usuario y contraseña"""
@@ -63,7 +63,7 @@ class StaffHandler:
 
         usuario = self.__db.fetchOne()
         if usuario is None:
-            return "user is none"
+            return False
 
         storePwd = usuario[0]
         if bcrypt.checkpw(bytes(pwd, 'utf-8'), bytes(storePwd, 'utf-8')):
@@ -71,3 +71,16 @@ class StaffHandler:
             return True
         else:
             return False
+
+class User:
+    def __init__(self, codigo, username, type) -> None:
+        self.codigo = codigo
+        self.username = username
+        self.type = type
+
+    def toDict(self) -> Dict:
+        return {
+            "codigo": self.codigo,
+            "username": self.username,
+            "type": self.type
+        }
