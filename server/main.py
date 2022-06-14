@@ -1,16 +1,12 @@
 from cgitb import handler
-from flask import Flask, jsonify, request
+from urllib import response
+from flask import Flask, jsonify, make_response, request, Response
 from flask_cors import CORS
 from db import DB   
 from staff import StaffHandler
 
 app = Flask(__name__)
-CORS(app, origins="*")
-# cors = CORS(app, resource={
-#     r"/*":{
-#         "origins":"*"
-#     }
-# })
+CORS(app, origins="http://localhost:3000", supports_credentials=True)
 
 @app.route("/")
 def hello():
@@ -19,9 +15,13 @@ def hello():
 @app.route("/login", methods=["POST"])
 def login():
     content = request.get_json()
-    res = handler.loginUser(content["username"], content["password"])
-    return jsonify({"success": res})
+    user = handler.loginUser(content["username"], content["password"])
+    if user is None:
+        return make_response(jsonify({"error": "credenciales invalidas"}), 401)
 
+    response = make_response(jsonify(user.toDict()), 200)
+    response.set_cookie('currentUserType', user.type)
+    return response
 
 if __name__ == "__main__":
     global handler

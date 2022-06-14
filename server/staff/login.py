@@ -1,6 +1,21 @@
-from typing import Dict
+from typing import Dict, List
 from db import DB
 import bcrypt
+
+
+class User:
+    def __init__(self, codigo, username, pwd, type) -> None:
+        self.codigo = codigo
+        self.pwd = pwd
+        self.username = username
+        self.type = type
+
+    def toDict(self) -> Dict:
+        return {
+            "codigo": self.codigo,
+            "username": self.username,
+            "type": self.type
+        }
 
 class StaffHandler:
     """StaffHandler es una clase encargada del CRUD relacionado con los usuarios la mayoria de las acciones solo podran ser realizadas por un administrador"""
@@ -19,13 +34,13 @@ class StaffHandler:
         """, (username, hashPassword, userType))
         self.__db.commit()
 
-    def listUsers(self):
+    def listUsers(self) -> List[User]:
         """Lista a todos los usuarios registrados dentro de la aplicacion"""
         if self.__db.getCurrentUserType() != "administrador":
             return "no tiene permisos para realizar esta accion"
 
-        self.__db.queryDB("SELECT codigo, username, type from usuarios;")
-        return [User(u[0], u[1], u[2]) for u in self.__db.fetchAll()]
+        self.__db.queryDB("SELECT codigo, username, password, type from usuarios;")
+        return [User(u[0], u[1], u[2], u[3]) for u in self.__db.fetchAll()]
 
     def modifyUser(self, username, newUsername, pwd):
         """se encarga de la modificacion de los usuarios solo se permitira cambiar su nombre de usuario y contraseña"""
@@ -55,32 +70,16 @@ class StaffHandler:
         self.__db.queryDB("DELETE FROM usario WHERE codigo = %s", (user[0]))
         self.__db.commit()
 
-    def loginUser(self, username, pwd):
+    def loginUser(self, username, pwd) -> User | None:
         """Verifica las credenciales ingresadas por el usuario al momento de hacer login"""
+
         self.__db.queryDB("""
-            SELECT password, type FROM usuario WHERE username = %s
+            SELECT * FROM usuario WHERE username = %s
         """, (username,))
 
-        usuario = self.__db.fetchOne()
-        if usuario is None:
-            return False
+        raw_user = self.__db.fetchOne()
+        if raw_user is None:
+            return None
 
-        storePwd = usuario[0]
-        if bcrypt.checkpw(bytes(pwd, 'utf-8'), bytes(storePwd, 'utf-8')):
-            self.__db.setCurrentUserType(usuario[1])
-            return True
-        else:
-            return False
-
-class User:
-    def __init__(self, codigo, username, type) -> None:
-        self.codigo = codigo
-        self.username = username
-        self.type = type
-
-    def toDict(self) -> Dict:
-        return {
-            "codigo": self.codigo,
-            "username": self.username,
-            "type": self.type
-        }
+        user = User(raw_user[0], raw_user[1], raw_user[2], raw_user[3])
+        return user if bcrypt.checkpw(bytes(pwd, 'utf-8'), bytes(user.pwd, 'utf-8')) else None
