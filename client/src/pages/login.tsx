@@ -7,12 +7,16 @@ export const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [pwd, setPwd] = useState('');
   const [fail, setFail] = useState(false);
+  const [failMessage, setFailMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = () => {
     loginUSer(username, pwd)
-    .then(response => response["success"] ? navigate('/home') : setFail(true) )
-    .catch(err => console.log(err))
+    .then(_ => navigate('/home'))
+    .catch(err=> {
+      setFailMessage(err.message);
+      setFail(true);
+    })
   }
 
   return (
@@ -30,7 +34,7 @@ export const Login: React.FC = () => {
         <a onClick={_ => handleSubmit()} className="bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Button
         </a>
-        {fail ? (<p className="text-center text-2xl text-secondary">Credenciales incorrectas</p>) : null}
+        {fail ? (<p className="text-center text-2xl text-secondary">{failMessage}</p>) : null}
       </div>
     </div>
   )
