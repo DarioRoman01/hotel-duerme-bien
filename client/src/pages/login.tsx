@@ -19,7 +19,7 @@ export const Login: React.FC = () => {
           <FloatingLabelInput onChange={setPwd} placeholder="contraseña" type="password" />
         </div>
         <a onClick={_ => console.log(username, pwd)} href="/home"className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Button
+          Entrar
         </a>
       </div>
     </div>
