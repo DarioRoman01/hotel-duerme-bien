@@ -7,7 +7,7 @@ import { Navbar } from './components/navbar';
 
 const Clients: React.FC = () => {
   return (
-    <div className='container'>
+    <div className='w-full'>
       <Navbar />
       <h1>Home page</h1>
         <a href="/"className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">

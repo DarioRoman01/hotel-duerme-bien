@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import { getAllRooms, Room } from "../requests/requests";
 import { Table } from "../components/table";
+import { Navbar } from "../components/navbar";
 
 export const Rooms: React.FC = () => {
   const cols = ["codigo", "capacidad", "orientacion", "ocupada", "estado"]
@@ -42,6 +43,7 @@ export const Rooms: React.FC = () => {
   return (
     <div className="grid grid-cols-12 min-w-full">
       <div className="bg-secondary col-span-12 h-16">
+        <Navbar />
       </div>
       <div className="flex justify-center min-h-screen col-span-9">
         <Table columns={cols} rows={setRows()} />
