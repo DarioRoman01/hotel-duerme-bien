@@ -21,7 +21,7 @@ export const Login: React.FC = () => {
 
   return (
     <div className="lg:container lg:mx-auto min-h-screen flex justify-center items-center">
-      <div className="grid grid-cols-1 gap-5">
+      <div className="grid grid-cols-1 w-fit sm:w-2/6 gap-5">
         <div className="text-center">
           <label className="text-2xl text-secondary">Login</label>
         </div>
@@ -32,7 +32,7 @@ export const Login: React.FC = () => {
           <FloatingLabelInput onChange={setPwd} placeholder="contraseña" type="password" />
         </div>
         <button onClick={_ => handleSubmit()} className="bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
-          Button
+          Ingresar
         </button>
         {fail ? (<p className="text-center text-2xl text-secondary">{failMessage}</p>) : null}
       </div>

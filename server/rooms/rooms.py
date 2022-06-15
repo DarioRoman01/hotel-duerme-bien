@@ -22,7 +22,7 @@ class RoomHandler:
         """, None)
 
 
-        return [Room(r[0], r[1], r[2], r[3], r[4]).toDict() for r in self.__db.fetchAll()]
+        return [Room(r[0], r[1], r[2], r[3], round(r[4], 1)).toDict() for r in self.__db.fetchAll()]
 
     def deleteRoom(self, roomId):
         if self.__db.getCurrentUserType() is None:
