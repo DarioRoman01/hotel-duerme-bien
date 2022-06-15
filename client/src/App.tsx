@@ -17,7 +17,7 @@ const Clients: React.FC = () => {
 
 function App() {
   return (
-    <div className="App bg-primary">
+    <div className="App bg-primary min-h-screen">
       <Routes>
         <Route path='/' element={<Login/>}/>
         <Route path='/home' element={<Home/>}/>

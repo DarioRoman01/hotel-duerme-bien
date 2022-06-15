@@ -40,8 +40,15 @@ export const Rooms: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Table columns={cols} rows={setRows()} />
+    <div className="grid grid-cols-12 min-w-full">
+      <div className="bg-secondary col-span-12 h-16">
+      </div>
+      <div className="flex justify-center min-h-screen col-span-9">
+        <Table columns={cols} rows={setRows()} />
+      </div>
+      <div className="bg-secondary col-span-3">
+
+      </div>
     </div>
   )
 }
