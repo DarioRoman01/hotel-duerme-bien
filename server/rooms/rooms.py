@@ -14,18 +14,15 @@ class RoomHandler:
         return "success"
 
     def listAllRooms(self):
-        if self.__db.getCurrentUserType() is None:
-            return "usted no tiene permisos" 
-
         self.__db.queryDB("""
             SELECT h.codigo, h.capacidad, h.orientacion, h.ocupada, AVG(oh.estado) as 'estado' FROM habitacion as h
             INNER JOIN objeto_habitacion AS oh ON oh.codigo_habitacion = h.codigo
             WHERE eliminada = false
             group by h.codigo;
-        """)
+        """, None)
 
 
-        return [Room(r[0], r[1], r[2], r[3], r[4]) for r in self.__db.fetchAll()]
+        return [Room(r[0], r[1], r[2], r[3], r[4]).toDict() for r in self.__db.fetchAll()]
 
     def deleteRoom(self, roomId):
         if self.__db.getCurrentUserType() is None:
