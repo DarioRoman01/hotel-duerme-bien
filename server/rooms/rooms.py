@@ -1,3 +1,4 @@
+from typing import Dict
 from db import DB
 
 class RoomHandler:
@@ -13,17 +14,15 @@ class RoomHandler:
         return "success"
 
     def listAllRooms(self):
-        if self.__db.getCurrentUserType() is None:
-            return "usted no tiene permisos" 
-
         self.__db.queryDB("""
-            SELECT h.codigo, h.orientacion, h.ocupada, AVG(oh.estado) as 'estado' FROM habitacion as h
+            SELECT h.codigo, h.capacidad, h.orientacion, h.ocupada, AVG(oh.estado) as 'estado' FROM habitacion as h
             INNER JOIN objeto_habitacion AS oh ON oh.codigo_habitacion = h.codigo
             WHERE eliminada = false
             group by h.codigo;
-        """)
+        """, None)
 
-        return self.__db.fetchAll()
+
+        return [Room(r[0], r[1], r[2], r[3], r[4]).toDict() for r in self.__db.fetchAll()]
 
     def deleteRoom(self, roomId):
         if self.__db.getCurrentUserType() is None:
@@ -38,5 +37,20 @@ class RoomHandler:
         return "La habitacion se ha eliminada correctamente"
 
         
+class Room:
+    def __init__(self, codigo, capacidad, orientacion, ocupada, estado) -> None:
+        self.codigo = codigo
+        self.capacidad = capacidad
+        self.orientacion = orientacion
+        self.ocupada = ocupada
+        self.estado = estado
 
+    def toDict(self) -> Dict:
+        return {
+            "codigo": self.codigo,
+            "capacidad": self.capacidad,
+            "orientacion": self.orientacion,
+            "ocupada": self.ocupada,
+            "estado": self.estado
+        }
     
