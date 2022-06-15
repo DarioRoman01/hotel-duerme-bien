@@ -31,9 +31,9 @@ export const Login: React.FC = () => {
         <div>
           <FloatingLabelInput onChange={setPwd} placeholder="contraseña" type="password" />
         </div>
-        <a onClick={_ => handleSubmit()} className="bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
+        <button onClick={_ => handleSubmit()} className="bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Button
-        </a>
+        </button>
         {fail ? (<p className="text-center text-2xl text-secondary">{failMessage}</p>) : null}
       </div>
     </div>

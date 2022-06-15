@@ -1,4 +1,10 @@
-// custom error class for users signup and login requests
+export type Room = {
+  codigo: number,
+  capacidad: number,
+  orientacion: string,
+  ocupada: boolean,
+  estado: string
+}
 
 const headers = {
   Accept: "application/json",
@@ -22,4 +28,15 @@ export const loginUSer = async (username: string, pwd: string) => {
   }
 
   return await res.json()
+}
+
+export const getAllRooms = async (): Promise<Array<Room>> => {
+  const res = await fetch('http://localhost:5000/rooms')
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err['error'])
+  }
+
+  const content =  await res.json()
+  return content['rooms']
 }
