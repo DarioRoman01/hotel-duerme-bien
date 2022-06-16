@@ -40,10 +40,10 @@ class DB:
 
 
         CREATE TABLE IF NOT EXISTS habitacion (
-            codigo bigint PRIMARY KEY AUTO_INCREMENT NOT NULL ,
+            codigo VARCHAR(5) PRIMARY KEY AUTO_INCREMENT NOT NULL ,
             capacidad tinyint NOT NULL,
             orientacion varchar(20) NOT NULL,
-            ocupada bool NOT NULL,
+            estado ENUM('libre', 'ocupada', 'reservada') NOT NULL,
             eliminada bool default false NOT NULL
         );
 
@@ -55,26 +55,24 @@ class DB:
 
         CREATE TABLE IF NOT EXISTS historial_habitacion (
             codigo BIGINT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-            codigo_habitacion BIGINT NOT NULL,
-            codigo_cliente VARCHAR(12) NOT NULL,
+            codigo_habitacion VARCHAR(5) NOT NULL,
             activa BOOL NOT NULL,
             fecha_asignacion DATETIME NOT NULL,
             fecha_termino DATETIME NOT NULL,
-            FOREIGN KEY (codigo_cliente) REFERENCES  cliente(rut),
             FOREIGN KEY (codigo_habitacion) REFERENCES habitacion(codigo)
         );
 
-        CREATE TABLE IF NOT EXISTS acompañante (
+        CREATE TABLE IF NOT EXISTS client_historial (
             codigo BIGINT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+            rut_cliente VARCHAR(12) NOT NULL,
             codigo_historial BIGINT NOT NULL,
-            rut_acompañante VARCHAR(12),
             FOREIGN KEY (codigo_historial) REFERENCES historial_habitacion(codigo),
             FOREIGN KEY (rut_acompañante) REFERENCES cliente(rut)
         );
 
         CREATE TABLE IF NOT EXISTS objeto_habitacion (
             codigo BIGINT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-            codigo_habitacion BIGINT NOT NULL,
+            codigo_habitacion VARCHAR(5) NOT NULL,
             estado TINYINT(10),
             tipo ENUM(
                 'cama', 
@@ -97,7 +95,7 @@ class DB:
 
         CREATE TABLE IF NOT EXISTS daño_habitacion (
             codigo BIGINT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-            codigo_habitacion BIGINT NOT NULL,
+            codigo_habitacion VARCHAR(5) NOT NULL,
             rut_cliente VARCHAR(12),
             codigo_objeto BIGINT NOT NULL,
             descripcion varchar(500),

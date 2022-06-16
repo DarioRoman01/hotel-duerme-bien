@@ -3,13 +3,10 @@ from flask_cors import CORS
 from db import DB   
 from staff import StaffHandler
 from rooms import RoomHandler
+from clients import ClientsHandler
 
 app = Flask(__name__)
 CORS(app, origins="http://localhost:3000", supports_credentials=True)
-
-@app.route("/")
-def hello():
-    return "Hello World!"
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -25,12 +22,19 @@ def login():
 @app.route("/rooms", methods=["GET"])
 def handleRoomRequest():
     rooms = roomHandler.listAllRooms()
-    return make_response(jsonify({'rooms': rooms}))
+    return make_response(jsonify({'rooms': rooms}), 200)
+
+@app.route("/clients", methods=["GET"])
+def handleClientsRequests():
+    clients = clientsHandler.listAllClients()
+    return make_response(jsonify({'clients': clients}), 200)
 
 if __name__ == "__main__":
     global userHandler
     global roomHanlder
+    global clientsHandler
     db = DB()
     roomHandler = RoomHandler(db)
     userHandler = StaffHandler(db)
+    clientsHandler = ClientsHandler(db)
     app.run()
