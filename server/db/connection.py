@@ -1,6 +1,7 @@
 import mysql.connector
 import os
 from dotenv import load_dotenv
+from utils import NotFoundError, NotCreatedErorr
 
 
 class DB:
@@ -48,7 +49,7 @@ class DB:
 
         CREATE TABLE IF NOT EXISTS cliente (
             rut varchar(12) PRIMARY KEY NOT NULL,
-            nombre varchar(100) NOT NULL ,
+            nombre varchar(100) NOT NULL,
             reputacion tinyint(100) NOT NULL
         );
 
@@ -58,6 +59,7 @@ class DB:
             codigo_cliente VARCHAR(12) NOT NULL,
             activa BOOL NOT NULL,
             fecha_asignacion DATETIME NOT NULL,
+            fecha_termino DATETIME NOT NULL,
             FOREIGN KEY (codigo_cliente) REFERENCES  cliente(rut),
             FOREIGN KEY (codigo_habitacion) REFERENCES habitacion(codigo)
         );
@@ -113,12 +115,22 @@ class DB:
         """trae todos los elementos actualmente guardados en el cursor"""
         return self.__cursor.fetchall()
 
+    def checkExistanse(self, query, args, errMessage):
+        self.queryDB(query, args)
+        obj = self.fetchOne()
+        if obj is None:
+            raise NotFoundError(errMessage)
+
+    def checkCreation(self, result):
+        if not result.with_rows:
+            raise NotCreatedErorr("No se ha creado el objeto correctamente") 
+
     def commit(self):
         """realiza el commmit para que los cambios se vean reflejados en la base de datos"""
         self.__conn.commit()
 
     def queryDB(self, query: str, args: tuple):
         """queryDB es la funcion encargada de ejecutar los querys enviados por otras clases o funciones que lo requieran"""
-        self.__cursor.execute(query, args)
+        return self.__cursor.execute(query, args)
 
 
