@@ -32,6 +32,7 @@ class ClientsHandler:
             f"No se encontro una habitacion con el codigo {codigo_habitacion}"
         )
 
+
         queryResponsable = False
         for acompanante in acompanantes:
             if not queryResponsable:
@@ -47,6 +48,7 @@ class ClientsHandler:
             VALUES(%s, %s, true, %s, %s);
         """, (codigo_habitacion, codigo_cliente, fecha_asignacion, fecha_termino))
         
+        self.__db.queryDB("UPDATE habitacion SET ocupada = true WHERE codigo = %s", (codigo_habitacion, ))
         self.__db.checkCreation(result)
 
         historial =  result.fetchone()
