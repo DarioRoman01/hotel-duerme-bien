@@ -66,6 +66,7 @@ class DB:
             codigo BIGINT PRIMARY KEY AUTO_INCREMENT NOT NULL,
             rut_cliente VARCHAR(12) NOT NULL,
             codigo_historial BIGINT NOT NULL,
+            responsable BOOL NOT NULL,
             FOREIGN KEY (codigo_historial) REFERENCES historial_habitacion(codigo),
             FOREIGN KEY (rut_acompañante) REFERENCES cliente(rut)
         );

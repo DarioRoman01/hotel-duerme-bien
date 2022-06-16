@@ -4,19 +4,24 @@ from utils import NotCreatedErorr
 from datetime import datetime
 
 class Client:
-    def __init__(self, rut, nombre, reputacion, habitacion='') -> None:
-        self.rut = rut
-        self.nombre = nombre
-        self.reputacion = reputacion
-        self.habitacion = habitacion
+    def __init__(self, rut, nombre, reputacion, responsable) -> None:
+        self.__rut = rut
+        self.__nombre = nombre
+        self.__reputacion = reputacion
+        self.__responsable = responsable
+        self.__habitacion = None
 
     def toDict(self) -> Dict:
         return {
-            'rut': self.rut,
-            'nombre': self.nombre,
-            'reputacion': self.reputacion,
-            'habitacion': self.habitacion,
+            'rut': self.__rut,
+            'nombre': self.__nombre,
+            'reputacion': self.__reputacion,
+            'habitacion': self.__habitacion,
+            'responsable': self.__responsable,
         }
+
+    def setHabitacion(self, codigo_habitacion) -> None:
+        self.__habitacion = codigo_habitacion
 
 class ClientsHandler:
     def __init__(self, db: DB) -> None:
@@ -57,18 +62,18 @@ class ClientsHandler:
 
     def listCurrentClients(self):
         self.__db.queryDB("""
-            SELECT c.rut, c.nombre, c.reputacion, h.codigo_habitacion FROM cliente c
+            SELECT c.rut, c.nombre, c.reputacion, ch.responasble, h.codigo_habitacion FROM cliente c
             INNER JOIN cliente_historial as ch ON ch.rut_cliente = c.rut
             INNER JOIN historial_habitacion as h ON h.codigo = ch.codigo_historial
             WHERE h.activa = true;
         """)
 
         clientes = self.__db.fetchAll()
-        return [Client(c[0], c[1], c[2], c[3]).toDict() for c in clientes]
+        return [Client(c[0], c[1], c[2], c[3], c[4]).toDict() for c in clientes]
 
     def listAllClients(self):
         self.__db.queryDB("""
-        SELECT c.rut, c.nombre, c.reputacion, ch.codigo_habitacion, h.activa FROM clientes c
+        SELECT c.rut, c.nombre, c.reputacion, ch.responsable, ch.codigo_habitacion, h.activa FROM clientes c
         INNER cliente_historial as ch ON ch.rut_cliente = rut
         INNER JOIN historial_habitacion as h ON h.codigo = ch.codigo_historial
         """)
@@ -76,9 +81,9 @@ class ClientsHandler:
         raw_clientes = self.__db.fetchAll()
         clients = []
         for c in raw_clientes:
-            client = Client(c[0], c[1], c[2])
-            if c[4] == 1:
-                c.habitacion = c[3]
+            client = Client(c[0], c[1], c[2], c[3])
+            if c[5] == 1:
+                client.setHabitacion(c[4])
 
             clients.append(client.toDict())
 

@@ -10,7 +10,8 @@ export type Client = {
   rut: string,
   nombre: string,
   reputacion: number,
-  habitacion: string,
+  responsable: number
+  habitacion: string | null,
 }
 
 const headers = {

@@ -4,7 +4,7 @@ import { Table } from "../components/table";
 import { Navbar } from "../components/navbar";
 
 export const Clients: React.FC = () => {
-  const cols = ["rut", "nombre", "reputacion", "habitacion"];
+  const cols = ["rut", "nombre", "reputacion", "tipo", "habitacion"];
   const firstRender = useRef(true);
   let clientsArray: Client[] = [];
   const [clients, setClients] = useState(clientsArray);
@@ -31,7 +31,10 @@ export const Clients: React.FC = () => {
           {client.reputacion}
         </td>
         <td className="p-3 text-center">
-          {client.habitacion === '' ? client.habitacion : "no esta hospedado actualmente"}
+          {client.responsable === 1 ? "pasajero resopnasable" : "acompañante"}
+        </td>
+        <td className="p-3 text-center">
+          {client.habitacion === null ? client.habitacion : "no esta hospedado actualmente"}
         </td>
       </tr>
     ))

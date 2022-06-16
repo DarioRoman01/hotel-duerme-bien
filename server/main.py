@@ -1,9 +1,11 @@
 from flask import Flask, jsonify, make_response, request
+from functools import wraps
 from flask_cors import CORS
 from db import DB   
 from staff import StaffHandler
 from rooms import RoomHandler
 from clients import ClientsHandler
+from utils import login_required
 
 app = Flask(__name__)
 CORS(app, origins="http://localhost:3000", supports_credentials=True)
@@ -20,14 +22,17 @@ def login():
     return response
 
 @app.route("/rooms", methods=["GET"])
+@login_required
 def handleRoomRequest():
     rooms = roomHandler.listAllRooms()
     return make_response(jsonify({'rooms': rooms}), 200)
 
 @app.route("/clients", methods=["GET"])
+@login_required
 def handleClientsRequests():
     clients = clientsHandler.listAllClients()
     return make_response(jsonify({'clients': clients}), 200)
+
 
 if __name__ == "__main__":
     global userHandler
