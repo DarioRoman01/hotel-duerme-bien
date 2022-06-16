@@ -1,40 +1,37 @@
-import React, {useEffect, useRef, useState} from "react";
-import { Room, api } from "../requests/requests";
+import React, {useState, useEffect, useRef } from "react";
+import { Client, api } from "../requests/requests";
 import { Table } from "../components/table";
 import { Navbar } from "../components/navbar";
 
-export const Rooms: React.FC = () => {
-  const cols = ["codigo", "capacidad", "orientacion", "ocupada", "estado"]
-  let roomsArray: Room[] = [];
-  const [rooms, setRooms] = useState(roomsArray)
-  let firstRender = useRef(true)
+export const Clients: React.FC = () => {
+  const cols = ["rut", "nombre", "reputacion", "habitacion"];
+  const firstRender = useRef(true);
+  let clientsArray: Client[] = [];
+  const [clients, setClients] = useState(clientsArray);
 
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
-      api<Room[]>('/rooms')
-      .then(r => setRooms(r))
-      .catch(err => {throw new Error(err.message)})
+      api<Client[]>("/clients")
+      .then(c => setClients(c))
+      .catch(err => console.log(err)) 
     }
   })
 
   const setRows = () => {
-    return rooms.map(room => (
-      <tr key={room.codigo} className="bg-contrast text-secondary rounded-md">
+    return clients.map(client => (
+      <tr key={client.rut} className="bg-contrast text-secondary rounded-md">
         <td className="p-3 text-center">
-          {room.codigo}
+          {client.rut}
         </td>
         <td className="p-3 text-center">
-          {room.capacidad}
+          {client.nombre}
         </td>
         <td className="p-3 text-center">
-          {room.orientacion}
+          {client.reputacion}
         </td>
         <td className="p-3 text-center">
-          <span className="bg-red-400 text-gray-50 rounded-md px-2">{room.ocupada}</span>
-        </td>
-        <td className="p-3 text-center">
-          {room.estado}
+          {client.habitacion === '' ? client.habitacion : "no esta hospedado actualmente"}
         </td>
       </tr>
     ))

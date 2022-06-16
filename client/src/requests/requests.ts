@@ -6,6 +6,13 @@ export type Room = {
   estado: string
 }
 
+export type Client = {
+  rut: string,
+  nombre: string,
+  reputacion: number,
+  habitacion: string,
+}
+
 const headers = {
   Accept: "application/json",
   "Content-Type": "application/json",
@@ -30,13 +37,15 @@ export const loginUSer = async (username: string, pwd: string) => {
   return await res.json()
 }
 
-export const getAllRooms = async (): Promise<Array<Room>> => {
-  const res = await fetch('http://localhost:5000/rooms')
-  if (!res.ok) {
-    const err = await res.json();
+// api is a generic function to make get requests
+export async function api<T>(endpoint: string): Promise<T> {
+  const response = await fetch('http://localhost:5000'+endpoint, {
+    credentials: 'include',
+    headers: headers,
+  })
+  if (!response.ok) {
+    const err = await response.json();
     throw new Error(err['error'])
   }
-
-  const content =  await res.json()
-  return content['rooms']
+  return await response.json();
 }
