@@ -2,8 +2,12 @@ export type Room = {
   codigo: number,
   capacidad: number,
   orientacion: string,
-  ocupada: boolean,
-  estado: string
+  estado: string,
+  estado_i: number
+}
+
+export type RoomsResponse = {
+  rooms: Room[]
 }
 
 export type Client = {

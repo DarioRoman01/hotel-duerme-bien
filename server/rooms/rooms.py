@@ -15,7 +15,7 @@ class RoomHandler:
 
     def listAllRooms(self):
         self.__db.queryDB("""
-            SELECT h.codigo, h.capacidad, h.orientacion, h.ocupada, AVG(oh.estado) as 'estado' FROM habitacion as h
+            SELECT h.codigo, h.capacidad, h.orientacion, h.estado, AVG(oh.estado) as 'estado' FROM habitacion as h
             INNER JOIN objeto_habitacion AS oh ON oh.codigo_habitacion = h.codigo
             WHERE eliminada = false
             group by h.codigo;
@@ -38,19 +38,19 @@ class RoomHandler:
 
         
 class Room:
-    def __init__(self, codigo, capacidad, orientacion, ocupada, estado) -> None:
+    def __init__(self, codigo, capacidad, orientacion, estado, estad_i) -> None:
         self.codigo = codigo
         self.capacidad = capacidad
         self.orientacion = orientacion
-        self.ocupada = ocupada
         self.estado = estado
+        self.estado_i = estad_i
 
     def toDict(self) -> Dict:
         return {
             "codigo": self.codigo,
             "capacidad": self.capacidad,
             "orientacion": self.orientacion,
-            "ocupada": self.ocupada,
-            "estado": self.estado
+            "estado": self.estado,
+            "estado_i": self.estado_i
         }
     

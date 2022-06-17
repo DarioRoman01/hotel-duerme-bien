@@ -107,6 +107,8 @@ venv.bak/
 # local stuff
 pictures/
 .vscode/
+script.sql
+test.py
 
 # mypy
 .mypy_cache/

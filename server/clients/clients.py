@@ -38,12 +38,8 @@ class ClientsHandler:
             f"No se encontro una habitacion con el codigo {codigo_habitacion}"
         )
 
-        queryResponsable = False
+        self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (codigo_cliente,), f"No se encontro un cliente con rut {codigo_cliente}")
         for acompanante in acompanantes:
-            if not queryResponsable:
-                self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (codigo_cliente,), f"No se encontro un cliente con rut {codigo_cliente}")
-                queryResponsable = True
-
             self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (acompanante,), f"No se encontro un cliente con rut {acompanante}")
 
         now = datetime.now()
@@ -53,11 +49,11 @@ class ClientsHandler:
             VALUES(%s, %s, true, %s, %s);
         """, (codigo_habitacion, codigo_cliente, fecha_asignacion, fecha_termino))
         
-        self.__db.queryDB("UPDATE habitacion SET ocupada = true WHERE codigo = %s", (codigo_habitacion, ))
-        self.__db.checkCreation(result)
         historial =  result.fetchone()
+        res = self.__db.queryDB("INSERT INTO cliente_historial (rut_cliente, codigo_historial, responsable) VALUES (%s, %s, true)", (codigo_cliente, historial[0]))
+        self.__db.checkCreation(res)
         for acompanante in acompanantes:
-            res = self.__db.queryDB("INSERT INTO acompañante (rut_acompañante, codigo_historial) VALUES (%s, %s)", (acompanante, historial[0]))
+            res = self.__db.queryDB("INSERT INTO cliente_historial (rut_cliente, codigo_historial, responsable) VALUES (%s, %s, false)", (acompanante, historial[0]))
             self.__db.checkCreation(res)
 
     def listCurrentClients(self):

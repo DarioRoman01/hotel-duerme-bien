@@ -33,24 +33,23 @@ class DB:
         self.queryDB("""
         CREATE TABLE IF NOT EXISTS usuario (
             codigo bigint PRIMARY KEY AUTO_INCREMENT NOT NULL,
-            username varchar(50) NOT NULL,
-            password varchar(20) NOT NULL ,
+            username varchar(50) unique NOT NULL,
+            password varchar(100) NOT NULL ,
             type enum('administrador', 'gerente') NOT NULL
         );
 
-
         CREATE TABLE IF NOT EXISTS habitacion (
-            codigo VARCHAR(5) PRIMARY KEY AUTO_INCREMENT NOT NULL ,
+            codigo VARCHAR(5) PRIMARY KEY NOT NULL ,
             capacidad tinyint NOT NULL,
             orientacion varchar(20) NOT NULL,
-            estado ENUM('libre', 'ocupada', 'reservada') NOT NULL,
+            estado ENUM('libre', 'ocupada', 'reservada') NOT NULL DEFAULT 'libre',
             eliminada bool default false NOT NULL
         );
 
         CREATE TABLE IF NOT EXISTS cliente (
             rut varchar(12) PRIMARY KEY NOT NULL,
             nombre varchar(100) NOT NULL,
-            reputacion tinyint(100) NOT NULL
+            reputacion tinyint(100) NOT NULL DEFAULT 100
         );
 
         CREATE TABLE IF NOT EXISTS historial_habitacion (
@@ -68,7 +67,7 @@ class DB:
             codigo_historial BIGINT NOT NULL,
             responsable BOOL NOT NULL,
             FOREIGN KEY (codigo_historial) REFERENCES historial_habitacion(codigo),
-            FOREIGN KEY (rut_acompañante) REFERENCES cliente(rut)
+            FOREIGN KEY (rut_cliente) REFERENCES cliente(rut)
         );
 
         CREATE TABLE IF NOT EXISTS objeto_habitacion (
@@ -76,17 +75,17 @@ class DB:
             codigo_habitacion VARCHAR(5) NOT NULL,
             estado TINYINT(10),
             tipo ENUM(
-                'cama', 
-                'espejo', 
-                'velador', 
-                'televisor', 
-                'silla', 
-                'control', 
-                'aire_acondicionado', 
-                'sabanas', 
-                'frasadas', 
-                'toallas', 
-                'almohadas', 
+                'cama',
+                'espejo',
+                'velador',
+                'televisor',
+                'silla',
+                'control',
+                'aire_acondicionado',
+                'sabanas',
+                'frasadas',
+                'toallas',
+                'almohadas',
                 'nevera',
                 'caja_fuerte',
                 'telefono_servicio'

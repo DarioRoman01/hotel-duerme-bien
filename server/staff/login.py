@@ -36,9 +36,6 @@ class StaffHandler:
 
     def listUsers(self) -> List[User]:
         """Lista a todos los usuarios registrados dentro de la aplicacion"""
-        if self.__db.getCurrentUserType() != "administrador":
-            return "no tiene permisos para realizar esta accion"
-
         self.__db.queryDB("SELECT codigo, username, password, type from usuarios;")
         return [User(u[0], u[1], u[2], u[3]) for u in self.__db.fetchAll()]
 

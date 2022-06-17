@@ -1,10 +1,10 @@
 import React, {useEffect, useRef, useState} from "react";
-import { Room, api } from "../requests/requests";
+import { Room, api, RoomsResponse } from "../requests/requests";
 import { Table } from "../components/table";
 import { Navbar } from "../components/navbar";
 
 export const Rooms: React.FC = () => {
-  const cols = ["codigo", "capacidad", "orientacion", "ocupada", "estado"]
+  const cols = ["codigo", "capacidad", "orientacion", "estado", "estado inmueble"]
   let roomsArray: Room[] = [];
   const [rooms, setRooms] = useState(roomsArray)
   let firstRender = useRef(true)
@@ -12,9 +12,9 @@ export const Rooms: React.FC = () => {
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
-      api<Room[]>('/rooms')
-      .then(r => setRooms(r))
-      .catch(err => {throw new Error(err.message)})
+      api<RoomsResponse>('/rooms')
+      .then(r => setRooms(r.rooms))
+      .catch(err => console.log(err))
     }
   })
 
@@ -31,25 +31,34 @@ export const Rooms: React.FC = () => {
           {room.orientacion}
         </td>
         <td className="p-3 text-center">
-          <span className="bg-red-400 text-gray-50 rounded-md px-2">{room.ocupada}</span>
+          {room.estado}
         </td>
         <td className="p-3 text-center">
-          {room.estado}
+          {room.estado_i}
         </td>
       </tr>
     ))
   }
 
   return (
-    <div className="grid grid-cols-12 min-w-full">
-      <div className="bg-secondary col-span-12 h-16">
+    <div className="grid grid-cols-12 grid-rows-12 min-w-full">
+      <div className="bg-secondary row-span-3 col-span-12 h-16">
         <Navbar />
       </div>
-      <div className="flex justify-center min-h-screen col-span-9">
+      <div className="flex justify-center min-h-fit sm:min-h-screen col-span-12 row-span-5 sm:col-span-9 sm:row-span-9">
         <Table columns={cols} rows={setRows()} />
       </div>
-      <div className="bg-secondary col-span-3">
-
+      <div className="bg-secondary col-span-12 row-span-4 sm:col-span-3 sm:row-span-9 min-h-screen p-3">
+        <div className="flex justify-center">
+          <div className="mb-3 xl:w-96">
+            <select className="form-select appearance-none block w-full px-3 py-1.5 text-base font-normal text-secondary bg-contrast bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:border-blue-600 focus:outline-none" aria-label="Default select example">
+                <option disabled selected>Estado</option>
+                <option className="opt" value="1">Ocupada</option>
+                <option className="opt" value="2">Reservada</option>
+                <option className="opt" value="3">Libre</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
   )
