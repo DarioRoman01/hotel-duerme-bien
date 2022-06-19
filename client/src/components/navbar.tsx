@@ -1,4 +1,5 @@
 import React from "react";
+import { Icon } from "@iconify/react";
 
 
 export const Navbar = () => {
@@ -35,7 +36,7 @@ export const Navbar = () => {
               type="button"
               onClick={() => setNavbarOpen(!navbarOpen)}
             >
-              <i className="fas fa-bars"></i>
+              <Icon icon='fa:bars'/>
             </button>
           </div>
         </div>

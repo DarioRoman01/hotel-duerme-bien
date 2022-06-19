@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import g, jsonify, request, redirect, url_for, make_response
+from flask import jsonify, request, make_response
 
 class NotFoundError(Exception):
     """Error custom en caso de que un objeto no sea encontrado en la base de datos"""

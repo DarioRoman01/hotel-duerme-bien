@@ -21,21 +21,11 @@ export const Clients: React.FC = () => {
   const setRows = () => {
     return clients.map(client => (
       <tr key={client.rut} className="bg-contrast text-secondary rounded-md">
-        <td className="p-3 text-center">
-          {client.rut}
-        </td>
-        <td className="p-3 text-center">
-          {client.nombre}
-        </td>
-        <td className="p-3 text-center">
-          {client.reputacion}
-        </td>
-        <td className="p-3 text-center">
-          {client.responsable === 1 ? "pasajero resopnasable" : "acompañante"}
-        </td>
-        <td className="p-3 text-center">
-          {client.habitacion === null ? client.habitacion : "no esta hospedado actualmente"}
-        </td>
+        <td className="p-3 text-center">{client.rut}</td>
+        <td className="p-3 text-center">{client.nombre}</td>
+        <td className="p-3 text-center">{client.reputacion}</td>
+        <td className="p-3 text-center">{client.responsable === 1 ? "pasajero resopnasable" : "acompañante"}</td>
+        <td className="p-3 text-center">{client.habitacion === null ? client.habitacion : "no esta hospedado actualmente"}</td>
       </tr>
     ))
   }

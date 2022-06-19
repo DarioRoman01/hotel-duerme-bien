@@ -42,9 +42,6 @@ class StaffHandler:
     def modifyUser(self, username, newUsername, pwd):
         """se encarga de la modificacion de los usuarios solo se permitira cambiar su nombre de usuario y contraseña"""
 
-        if self.__db.getCurrentUserType() != "administrador":
-            return "no tiene permisos para realizar esta accion"
-
         salt = bcrypt.gensalt()
         hashPassword = bcrypt.hashpw(bytes(pwd, 'utf-8'), salt)
         self.__db.queryDB("""
@@ -57,9 +54,6 @@ class StaffHandler:
     def deleteUser(self, username):
         """Elimina a un usuario de la base de datos"""
 
-        if self.__db.getCurrentUserType() != "administrador":
-            return "no tiene permisos para realizar esta accion"
-
         user = self.__db.queryDB("SELECT * FROM usuario WHERE username = %s", (username, ))
         if user is None:
             return "el usuario indicado no existe"
@@ -70,10 +64,7 @@ class StaffHandler:
     def loginUser(self, username, pwd) -> User | None:
         """Verifica las credenciales ingresadas por el usuario al momento de hacer login"""
 
-        self.__db.queryDB("""
-            SELECT * FROM usuario WHERE username = %s
-        """, (username,))
-
+        self.__db.queryDB("SELECT * FROM usuario WHERE username = %s", (username,))
         raw_user = self.__db.fetchOne()
         if raw_user is None:
             return None
