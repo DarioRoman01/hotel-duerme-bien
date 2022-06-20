@@ -31,13 +31,13 @@
 }
 
 .slider__range {
-    background-color: #2f4a62;
+    background-color: #d69f5b;
     z-index: 2;
 }
 
 .slider__left-value,
 .slider__right-value {
-    color: #2f4a62;
+    color: #d69f5b;
     font-size: 12px;
     margin-top: 20px;
 }

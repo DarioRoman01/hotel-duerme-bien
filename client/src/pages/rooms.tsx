@@ -8,9 +8,7 @@ import { MultiRangeSlider } from "../components/slider";
 export const Rooms: React.FC = () => {
   let minVal = 1
   let maxVal = 10
-  const cols = ["codigo", "capacidad", "orientacion", "estado", "estado inmueble", "acciones"]
-  let roomsArray: Room[] = [];
-  const [rooms, setRooms] = useState(roomsArray)
+  const [rooms, setRooms] = useState([] as Room[])
   let firstRender = useRef(true)
 
   useEffect(() => {
@@ -32,7 +30,7 @@ export const Rooms: React.FC = () => {
         <td className="p-3 text-center">{room.estado_i}</td>
         <td className="p-3">
           <button className="my-auto mr-2"><Icon icon='fa-solid:eye'/></button>
-          <button className="my-auto mr-2"><Icon icon='bi:trash-fill'/></button>
+          <button className="my-auto mx-2"><Icon icon='bi:trash-fill'/></button>
         </td>
       </tr>
     ))
@@ -40,14 +38,17 @@ export const Rooms: React.FC = () => {
 
   return (
     <div className="grid grid-cols-12 grid-rows-12 min-w-full">
-      <div className="bg-secondary row-span-3 col-span-12 h-16">
+      <div className="bg-contrast row-span-3 col-span-12 h-16">
         <Navbar />
       </div>
       <div className="flex justify-center min-h-fit sm:min-h-screen col-span-12 row-span-5 sm:col-span-9 sm:row-span-9">
-        <Table columns={cols} rows={setRows()} />
+        <Table columns={["codigo", "capacidad", "orientacion", "estado", "estado inmueble", "acciones"]} rows={setRows()} />
       </div>
-      <div className="bg-secondary col-span-12 row-span-4 sm:col-span-3 sm:row-span-9 min-h-screen p-3">
+      <div className="bg-contrast col-span-12 row-span-4 sm:col-span-3 sm:row-span-9 min-h-screen p-3">
         <div className="flex flex-col justify-center items-center p-5">
+          <div className="mb-3 text-center">
+            <label className="text-3xl text-secondary text-bold">Filtros</label>
+          </div>
           <div className="mb-3 min-w-full">
             <select className="form-select appearance-none block w-full px-3 py-1.5 text-base font-normal text-secondary bg-contrast bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:border-blue-600 focus:outline-none" aria-label="Default select example">
                 <option disabled selected>Estado</option>
@@ -65,8 +66,8 @@ export const Rooms: React.FC = () => {
                 <option value="4">Oeste</option>
             </select>
           </div>
-          <div className="min-w-full text-center">
-            <label className="mt-3 text-xl text-primary">Estado Inventario</label>
+          <div className="min-w-full text-center mb-8">
+            <label className="mt-3 text-xl text-secondary">Estado Inventario</label>
             <MultiRangeSlider
               min={minVal}
               max={maxVal}
@@ -75,6 +76,11 @@ export const Rooms: React.FC = () => {
                 maxVal = max;
               }}
             />
+          </div>
+          <div className="min-w-full">
+            <button className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
+              Filtrar
+            </button>
           </div>
         </div>
       </div>

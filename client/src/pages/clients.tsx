@@ -1,19 +1,18 @@
 import React, {useState, useEffect, useRef } from "react";
-import { Client, api } from "../requests/requests";
+import { Client, api, CilentResponse } from "../requests/requests";
 import { Table } from "../components/table";
 import { Navbar } from "../components/navbar";
 
 export const Clients: React.FC = () => {
   const cols = ["rut", "nombre", "reputacion", "tipo", "habitacion"];
   const firstRender = useRef(true);
-  let clientsArray: Client[] = [];
-  const [clients, setClients] = useState(clientsArray);
+  const [clients, setClients] = useState([] as Client[]);
 
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
-      api<Client[]>("/clients")
-      .then(c => setClients(c))
+      api<CilentResponse>("/clients")
+      .then(c => setClients(c.clients))
       .catch(err => console.log(err)) 
     }
   })
@@ -25,20 +24,20 @@ export const Clients: React.FC = () => {
         <td className="p-3 text-center">{client.nombre}</td>
         <td className="p-3 text-center">{client.reputacion}</td>
         <td className="p-3 text-center">{client.responsable === 1 ? "pasajero resopnasable" : "acompañante"}</td>
-        <td className="p-3 text-center">{client.habitacion === null ? client.habitacion : "no esta hospedado actualmente"}</td>
+        <td className="p-3 text-center">{client.habitacion}</td>
       </tr>
     ))
   }
 
   return (
     <div className="grid grid-cols-12 min-w-full">
-      <div className="bg-secondary col-span-12 h-16">
+      <div className="bg-contrast col-span-12 h-16">
         <Navbar />
       </div>
       <div className="flex justify-center min-h-screen col-span-9">
         <Table columns={cols} rows={setRows()} />
       </div>
-      <div className="bg-secondary col-span-3">
+      <div className="bg-contrast col-span-3">
 
       </div>
     </div>

@@ -15,7 +15,24 @@ export type Client = {
   nombre: string,
   reputacion: number,
   responsable: number
-  habitacion: string | null,
+  habitacion: string,
+}
+
+export type CilentResponse = {
+  clients: Client[]
+}
+
+export type Record = {
+  activa: boolean,
+  clientes: Client[],
+  codigo: number,
+  codigo_habitacion: string,
+  fecha_asignacion: string,
+  fecha_termino: string
+}
+
+export type RecordsResponse = {
+  records: Record[]
 }
 
 const headers = {
