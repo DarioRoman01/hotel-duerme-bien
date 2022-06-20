@@ -127,8 +127,6 @@ class DB:
         """realiza el commmit para que los cambios se vean reflejados en la base de datos"""
         self.__conn.commit()
 
-    def queryDB(self, query: str, args: tuple):
+    def queryDB(self, query: str, args: tuple=None):
         """queryDB es la funcion encargada de ejecutar los querys enviados por otras clases o funciones que lo requieran"""
         return self.__cursor.execute(query, args)
-
-

@@ -1,6 +1,5 @@
-from typing import Dict, List
+from typing import Dict
 from db import DB
-from utils import NotCreatedErorr
 from datetime import datetime
 
 class Client:
@@ -9,7 +8,7 @@ class Client:
         self.__nombre = nombre
         self.__reputacion = reputacion
         self.__responsable = responsable
-        self.__habitacion = None
+        self.__habitacion = "no esta hospedado actualmente"
 
     def toDict(self) -> Dict:
         return {
@@ -58,8 +57,8 @@ class ClientsHandler:
 
     def listCurrentClients(self):
         self.__db.queryDB("""
-            SELECT c.rut, c.nombre, c.reputacion, ch.responasble, h.codigo_habitacion FROM cliente c
-            INNER JOIN cliente_historial as ch ON ch.rut_cliente = c.rut
+            SELECT c.rut, c.nombre, c.reputacion, ch.responsable, h.codigo_habitacion FROM cliente c
+            INNER JOIN client_historial as ch ON ch.rut_cliente = c.rut
             INNER JOIN historial_habitacion as h ON h.codigo = ch.codigo_historial
             WHERE h.activa = true;
         """)
@@ -69,9 +68,9 @@ class ClientsHandler:
 
     def listAllClients(self):
         self.__db.queryDB("""
-        SELECT c.rut, c.nombre, c.reputacion, ch.responsable, ch.codigo_habitacion, h.activa FROM clientes c
-        INNER cliente_historial as ch ON ch.rut_cliente = rut
-        INNER JOIN historial_habitacion as h ON h.codigo = ch.codigo_historial
+        SELECT c.rut, c.nombre, c.reputacion, ch.responsable, h.codigo_habitacion, h.activa FROM cliente c
+        INNER JOIN client_historial as ch ON ch.rut_cliente = rut
+        INNER JOIN historial_habitacion as h ON h.codigo = ch.codigo_historial;
         """)
 
         raw_clientes = self.__db.fetchAll()

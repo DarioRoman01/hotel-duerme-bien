@@ -1,5 +1,6 @@
 from typing import Dict
 from db import DB
+from clients import Client
 
 class RoomHandler:
     def __init__(self, db: DB) -> None:
@@ -20,9 +21,27 @@ class RoomHandler:
 
         return [Room(r[0], r[1], r[2], r[3], round(r[4], 1)).toDict() for r in self.__db.fetchAll()]
 
+    def getRoomsHistory(self):
+        self.__db.queryDB("SELECT * FROM historial_habitacion;")
+        raw_historys = self.__db.fetchAll()
+        historys = []
+
+        for h in raw_historys:
+            self.__db.queryDB("""
+                select c.rut, c.nombre, c.reputacion, ch.responsable from client_historial ch
+                inner join cliente c on ch.rut_cliente = c.rut
+                where ch.codigo_historial = %s;
+            """, (h[0], ))
+
+            history = RoomHistory(h[0], h[1], h[2], h[3], h[4]) 
+            history.setClients([Client(c[0], c[1], c[2], c[3]).toDict() for c in self.__db.fetchAll()])
+            historys.append(history.toDict())
+
+        return historys
+
     def getAllRoomObjects(self, codgio_habitacion):
         self.__db.queryDB("SELECT * FROM objeto_habitacion WHERE codigo_habitacion = %s", (codgio_habitacion))
-        return [RoomObject(o[0], o[0], o[0], o[0]).toDict() for o in self.__db.fetchAll()]   
+        return [RoomObject(o[0], o[1], o[2], o[3]).toDict() for o in self.__db.fetchAll()]   
 
     def deleteRoom(self, roomId):
         habitacion = self.__db.queryDB("SELECT * FROM habitaicon WHERE codigo = %s", (roomId, ))
@@ -65,4 +84,26 @@ class RoomObject:
             "estado": self.__estado,
             "tipo": self.__tipo,
         }
-    
+
+class RoomHistory:
+    def __init__(self, codigo, codigo_habitacion, activa, fecha_asignacion, fecha_termino) -> None:
+        self.__codigo = codigo
+        self.__codigo_habitacion = codigo_habitacion
+        self.__activa = activa
+        self.__fecha_asignacion = fecha_asignacion
+        self.__fecha_termino = fecha_termino
+        self.__clients = []
+        
+    def toDict(self) -> Dict:
+        return {
+            "codigo": self.__codigo,
+            "codigo_habitacion": self.__codigo_habitacion,
+            "activa": self.__activa,
+            "fecha_asignacion": self.__fecha_asignacion,
+            "fecha_termino": self.__fecha_termino,
+            "clientes": self.__clients
+        }
+
+    def setClients(self, clients):
+        self.__clients = clients
+        

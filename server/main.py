@@ -33,6 +33,13 @@ def handleClientsRequests():
     clients = clientsHandler.listAllClients()
     return make_response(jsonify({'clients': clients}), 200)
 
+@app.route("/records", methods=["GET"])
+@login_required
+def handleRecordsRequests():
+    historys = roomHandler.getRoomsHistory()
+    return make_response(jsonify({'records': historys}), 200)
+
+
 
 if __name__ == "__main__":
     global userHandler
