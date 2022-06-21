@@ -46,18 +46,18 @@ class RoomHandler:
         WHERE eliminada = false
         """        
 
-        if filters.get("capacidad"):
+        if filters.get("capacidad") != None:
             query += f" AND capacidad = {filters['capacidad']}"
 
-        if filters.get("orientacion"):
+        if filters.get("orientacion") != None:
             query += f" AND h.orientacion = '{filters['orientacion']}'"
 
-        if filters.get("estado"):
+        if filters.get("estado") != None:
             query += f" AND h.estado = '{filters['estado']}'"
 
         query += " group by h.codigo"
-        if filters.get("max") or filters.get("min"):
-            if filters.get("max") and filters.get("min"):
+        if filters.get("max") != None or filters.get("min") != None:
+            if filters.get("max") != None and filters.get("min") != None:
                 query += f" HAVING estado_i BETWEEN {filters['min']} AND {filters['max']}"
             
             elif filters.get("min"):

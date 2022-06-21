@@ -25,8 +25,8 @@ def login():
 def handleRoomRequest():
     if request.method == "POST":
         content = request.get_json()
-        query = roomHandler.filterRooms(content)
-        return make_response(jsonify({'query': query}), 200)
+        rooms = roomHandler.filterRooms(content)
+        return make_response(jsonify({'rooms': rooms}), 200)
         
     rooms = roomHandler.listAllRooms()
     return make_response(jsonify({'rooms': rooms}), 200)

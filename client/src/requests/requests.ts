@@ -59,6 +59,22 @@ export const loginUSer = async (username: string, pwd: string) => {
   return await res.json()
 }
 
+export const filterRooms = async (filters: Object): Promise<RoomsResponse> => {
+  const res = await fetch('http://localhost:5000/rooms', {
+    method: "post",
+    body: JSON.stringify(filters),
+    headers: headers,
+    credentials: 'include'
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err["error"]);
+  }
+
+  return await res.json()
+}
+
 // api is a generic function to make get requests
 export async function api<T>(endpoint: string): Promise<T> {
   const response = await fetch('http://localhost:5000'+endpoint, {
