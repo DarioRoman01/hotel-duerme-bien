@@ -39,6 +39,36 @@ class RoomHandler:
 
         return historys
 
+    def filterRooms(self, filters: Dict):
+        query = """
+        SELECT h.codigo, h.capacidad, h.orientacion, h.estado, AVG(oh.estado) as 'estado_i' FROM habitacion as h
+        INNER JOIN objeto_habitacion AS oh ON oh.codigo_habitacion = h.codigo
+        WHERE eliminada = false
+        """        
+
+        if filters.get("capacidad"):
+            query += f" AND capacidad = {filters['capacidad']}"
+
+        if filters.get("orientacion"):
+            query += f" AND h.orientacion = '{filters['orientacion']}'"
+
+        if filters.get("estado"):
+            query += f" AND h.estado = '{filters['estado']}'"
+
+        query += " group by h.codigo"
+        if filters.get("max") or filters.get("min"):
+            if filters.get("max") and filters.get("min"):
+                query += f" HAVING estado_i BETWEEN {filters['min']} AND {filters['max']}"
+            
+            elif filters.get("min"):
+                query += f" HAVING estado_i >= {filters['min']}"
+
+            else:
+                query += f" HAVING estado_i <= {filters['max']}"
+
+        self.__db.queryDB(query)
+        return [Room(r[0], r[1], r[2], r[3], round(r[4], 1)).toDict() for r in self.__db.fetchAll()]
+
     def getAllRoomObjects(self, codgio_habitacion):
         self.__db.queryDB("SELECT * FROM objeto_habitacion WHERE codigo_habitacion = %s", (codgio_habitacion))
         return [RoomObject(o[0], o[1], o[2], o[3]).toDict() for o in self.__db.fetchAll()]   

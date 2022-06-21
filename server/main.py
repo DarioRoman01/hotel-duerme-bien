@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, make_response, request
-from functools import wraps
 from flask_cors import CORS
 from db import DB   
 from staff import StaffHandler
@@ -21,23 +20,34 @@ def login():
     response.set_cookie('currentUserType', user.type)
     return response
 
-@app.route("/rooms", methods=["GET"])
+@app.route("/rooms", methods=["GET", "POST"])
 @login_required
 def handleRoomRequest():
+    if request.method == "POST":
+        content = request.get_json()
+        query = roomHandler.filterRooms(content)
+        return make_response(jsonify({'query': query}), 200)
+        
     rooms = roomHandler.listAllRooms()
     return make_response(jsonify({'rooms': rooms}), 200)
 
-@app.route("/clients", methods=["GET"])
+@app.route("/clients", methods=["GET", "POST"])
 @login_required
 def handleClientsRequests():
-    clients = clientsHandler.listAllClients()
-    return make_response(jsonify({'clients': clients}), 200)
+    if request.method == "POST":
+        pass # appply filters
+    else:
+        clients = clientsHandler.listAllClients()
+        return make_response(jsonify({'clients': clients}), 200)
 
-@app.route("/records", methods=["GET"])
+@app.route("/records", methods=["GET", "POST"])
 @login_required
 def handleRecordsRequests():
-    historys = roomHandler.getRoomsHistory()
-    return make_response(jsonify({'records': historys}), 200)
+    if request.method == "POST":
+        pass # appply filters
+    else:
+        historys = roomHandler.getRoomsHistory()
+        return make_response(jsonify({'records': historys}), 200)
 
 
 
