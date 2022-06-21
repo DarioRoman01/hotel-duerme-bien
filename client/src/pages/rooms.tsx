@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import { api, RoomsResponse, filterRooms } from "../requests/requests";
+import { getRequest, RoomsResponse, postRequest } from "../requests/requests";
 import { Table } from "../components/table";
 import { Navbar } from "../components/navbar";
 import { Icon } from '@iconify/react';
@@ -18,7 +18,7 @@ export const Rooms: React.FC = () => {
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
-      api<RoomsResponse>('/rooms')
+      getRequest<RoomsResponse>('/rooms')
       .then(r => callSetRows(r))
       .catch(err => console.log(err))
     }
@@ -33,7 +33,7 @@ export const Rooms: React.FC = () => {
       'max': maxVal,
     }
     
-    filterRooms(filters)
+    postRequest<RoomsResponse>(filters, 'rooms')
     .then(r => callSetRows(r))
     .catch(err => console.log(err))
   }

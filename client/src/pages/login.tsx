@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FloatingLabelInput } from "../components/floatingLabel";
 import { useNavigate } from "react-router-dom";
-import { loginUSer } from "../requests/requests";
+import { postRequest } from "../requests/requests";
 
 export const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -11,7 +11,7 @@ export const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSubmit = () => {
-    loginUSer(username, pwd)
+    postRequest<any>({username: username, password: pwd}, 'login')
     .then(_ => navigate('/home'))
     .catch(err=> {
       setFailMessage(err.message);

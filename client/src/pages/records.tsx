@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Navbar } from "../components/navbar";
 import { Table } from "../components/table";
-import { api, Record, RecordsResponse } from "../requests/requests";
+import { getRequest, Record, RecordsResponse } from "../requests/requests";
 
 export const Records: React.FC = () => {
   const [records, setRecords] = useState([] as Record[])
@@ -10,7 +10,7 @@ export const Records: React.FC = () => {
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false
-      api<RecordsResponse>("/records")
+      getRequest<RecordsResponse>("/records")
       .then(r => setRecords(r.records))
       .catch(err => console.log(err))
     }

@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef } from "react";
-import { Client, api, CilentResponse } from "../requests/requests";
+import { Client, getRequest, CilentResponse } from "../requests/requests";
 import { Table } from "../components/table";
 import { Navbar } from "../components/navbar";
 
@@ -11,7 +11,7 @@ export const Clients: React.FC = () => {
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
-      api<CilentResponse>("/clients")
+      getRequest<CilentResponse>("/clients")
       .then(c => setClients(c.clients))
       .catch(err => console.log(err)) 
     }

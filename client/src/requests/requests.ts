@@ -40,29 +40,11 @@ const headers = {
   "Content-Type": "application/json",
 }
 
-export const loginUSer = async (username: string, pwd: string) => {
-  const res = await fetch('http://localhost:5000/login', {
+// post request is a generic function to handle post request
+export async function postRequest<T>(body: Object, endpoint: string): Promise<T> {
+  const res = await fetch(`http://localhost:5000/${endpoint}`, {
     method: "post",
-    body: JSON.stringify({
-      "username": username,
-      "password": pwd
-    }),
-    headers: headers,
-    credentials: 'include'
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err["error"]);
-  }
-
-  return await res.json()
-}
-
-export const filterRooms = async (filters: Object): Promise<RoomsResponse> => {
-  const res = await fetch('http://localhost:5000/rooms', {
-    method: "post",
-    body: JSON.stringify(filters),
+    body: JSON.stringify(body),
     headers: headers,
     credentials: 'include'
   });
@@ -76,8 +58,8 @@ export const filterRooms = async (filters: Object): Promise<RoomsResponse> => {
 }
 
 // api is a generic function to make get requests
-export async function api<T>(endpoint: string): Promise<T> {
-  const response = await fetch('http://localhost:5000'+endpoint, {
+export async function getRequest<T>(endpoint: string): Promise<T> {
+  const response = await fetch(`http://localhost:5000/${endpoint}`, {
     credentials: 'include',
     headers: headers,
   })
