@@ -15,7 +15,7 @@ export const Home: React.FC = () => {
           </a>
         </div>
         <div>
-          <a href="/history" className="bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
+          <a href="/records" className="bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
             history
           </a>
         </div>

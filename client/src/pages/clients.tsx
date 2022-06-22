@@ -27,9 +27,10 @@ export const Clients: React.FC = () => {
       room: room === '' ? null : room,
     }
 
-    postRequest<CilentResponse>(filters, 'clients')
-    .then(c => callSetRows(c))
-    .catch(err => console.log(err))
+    console.log(filters)
+    // postRequest<CilentResponse>(filters, 'clients')
+    // .then(c => callSetRows(c))
+    // .catch(err => console.log(err))
   }
 
   const callSetRows = (c: CilentResponse) => {
