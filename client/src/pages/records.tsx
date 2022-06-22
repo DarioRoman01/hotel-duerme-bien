@@ -2,10 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { Navbar } from "../components/navbar";
 import { Table } from "../components/table";
 import { getRequest, Record, RecordsResponse } from "../requests/requests";
+import { DatePicker } from "../components/datePickers";
+import { FloatingLabelInput } from "../components/floatingLabel";
 
 export const Records: React.FC = () => {
-  const [records, setRecords] = useState([] as Record[])
-  let firstRender = useRef(true)
+  const [startDate, setStartDate] = useState('');
+  const [finishDate, setFinishDate] = useState('');
+  const [records, setRecords] = useState([] as Record[]);
+  let firstRender = useRef(true);
 
   useEffect(() => {
     if (firstRender.current) {
@@ -30,15 +34,40 @@ export const Records: React.FC = () => {
   }
 
   return (
-    <div className="grid grid-cols-12 min-w-full">
-      <div className="bg-contrast col-span-12 h-16">
+    <div className="grid grid-cols-12 grid-rows-12 min-w-full">
+      <div className="bg-contrast row-span-3 col-span-12 h-16">
         <Navbar />
       </div>
-      <div className="flex justify-center min-h-screen col-span-9">
+      <div className="flex justify-center min-h-fit sm:min-h-screen col-span-12 row-span-5 sm:col-span-9 sm:row-span-9">
         <Table columns={["codigo", "codigo habitacion", "activa", "fehca inicio", "fecha termino", "clientes"]} rows={setRows()} />
       </div>
-      <div className="bg-contrast col-span-3">
-
+      <div className="bg-contrast col-span-12 row-span-4 sm:col-span-3 sm:row-span-9 min-h-screen p-3">
+        <div className="flex flex-col justify-center items-center p-5">
+          <div className="mb-3 text-center">
+            <label className="text-3xl text-secondary text-bold">Filtros</label>
+          </div>
+          <div className="mb-3 min-w-full">
+            <select className="form-select appearance-none block w-full px-3 py-1.5 text-base font-normal text-secondary bg-contrast bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:border-blue-600 focus:outline-none" aria-label="Default select example">
+                <option value=''>Estado</option>
+                <option value="responsable">Activa</option>
+                <option value="acompanante">no activa</option>
+            </select>
+          </div>
+          <div className="mb-3 min-w-full">
+            <DatePicker onChange={setStartDate} label="Fecha inicio" />
+          </div>
+          <div className="mb-3 min-w-full">
+            <DatePicker onChange={setStartDate} label="Fecha termino" />
+          </div>
+          <div className="mb-3 min-w-full">
+            <FloatingLabelInput onChange={setStartDate} placeholder="Habitacion" type="text"/>
+          </div>
+          <div className="min-w-full">
+            <button className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
+              Filtrar
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
