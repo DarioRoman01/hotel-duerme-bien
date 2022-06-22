@@ -21,23 +21,60 @@ class RoomHandler:
 
         return [Room(r[0], r[1], r[2], r[3], round(r[4], 1)).toDict() for r in self.__db.fetchAll()]
 
-    def getRoomsHistory(self):
-        self.__db.queryDB("SELECT * FROM historial_habitacion;")
-        raw_historys = self.__db.fetchAll()
-        historys = []
-
-        for h in raw_historys:
+    def appendClientsToRecord(self, raw_records):
+        records = []
+        for r in raw_records:
             self.__db.queryDB("""
                 select c.rut, c.nombre, c.reputacion, ch.responsable from client_historial ch
                 inner join cliente c on ch.rut_cliente = c.rut
                 where ch.codigo_historial = %s;
-            """, (h[0], ))
+            """, (r[0], ))
 
-            history = RoomHistory(h[0], h[1], h[2], h[3], h[4]) 
-            history.setClients([Client(c[0], c[1], c[2], c[3]).toDict() for c in self.__db.fetchAll()])
-            historys.append(history.toDict())
+            record = RoomHistory(r[0], r[1], r[2], r[3], r[4]) 
+            record.setClients([Client(c[0], c[1], c[2], c[3]).toDict() for c in self.__db.fetchAll()])
+            records.append(record.toDict())
 
-        return historys
+        return records
+
+    def getRoomsHistory(self):
+        self.__db.queryDB("SELECT * FROM historial_habitacion;")
+        raw_historys = self.__db.fetchAll()
+        return self.appendClientsToRecord(raw_historys)
+
+    def filterRoomHistory(self, filters: Dict):
+        query = "SELECT * FROM historial_habitacion WHERE "
+        first = False
+
+        if filters.get('room') != None:
+            first = True
+            query += f"codigo_habitacion = '{filters.get('room')}'" 
+
+        if filters.get('state') != None:
+            if first:
+                query += f" AND activa = {filters.get('state')}"
+            else: 
+                first = True
+                query += f" activa = {filters.get('state')}" 
+
+        if filters.get('start') != None:
+            if first:
+                query += f" AND fecha_asignacion >= '{filters.get('start')}'"
+            else:
+                first = True
+                query += f" fecha_asignacion >= '{filters.get('start')}'"
+
+        if filters.get('finish') != None:
+            if first:
+                query += f" AND fecha_termino <= '{filters.get('finish')}'"
+            else:
+                first = True
+                query += f" fecha_termino <= '{filters.get('finish')}'"
+
+        print(query)
+        self.__db.queryDB(query)
+        raw_records = self.__db.fetchAll()
+        return self.appendClientsToRecord(raw_records)
+
 
     def filterRooms(self, filters: Dict):
         query = """
