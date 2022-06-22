@@ -3,7 +3,7 @@ from db import DB
 from datetime import datetime
 
 class Client:
-    def __init__(self, rut, nombre, reputacion, responsable) -> None:
+    def __init__(self, rut, nombre, reputacion, responsable=None) -> None:
         self.__rut = rut
         self.__nombre = nombre
         self.__reputacion = reputacion
@@ -18,6 +18,12 @@ class Client:
             'habitacion': self.__habitacion,
             'responsable': self.__responsable,
         }
+    
+    def getRut(self):
+        return self.__rut
+
+    def setResponsable(self, responsable):
+        self.__responsable = responsable
 
     def setHabitacion(self, codigo_habitacion) -> None:
         self.__habitacion = codigo_habitacion
@@ -67,21 +73,22 @@ class ClientsHandler:
         return [Client(c[0], c[1], c[2], c[3], c[4]).toDict() for c in clientes]
 
     def listAllClients(self):
-        self.__db.queryDB("""
-        SELECT c.rut, c.nombre, c.reputacion, ch.responsable, h.codigo_habitacion, h.activa FROM cliente c
-        INNER JOIN client_historial as ch ON ch.rut_cliente = rut
-        INNER JOIN historial_habitacion as h ON h.codigo = ch.codigo_historial;
-        """)
-
-        raw_clientes = self.__db.fetchAll()
+        self.__db.queryDB("SELECT * FROM cliente")
+        raw_clients = self.__db.fetchAll()
         clients = []
-        for c in raw_clientes:
-            client = Client(c[0], c[1], c[2], c[3])
-            if c[5] == 1:
-                client.setHabitacion(c[4])
+        for c in raw_clients:
+            client = Client(c[0], c[1], c[2])
+            self.__db.queryDB("""
+            select ch.responsable, hh.codigo_habitacion from client_historial ch
+            inner join historial_habitacion hh on ch.codigo_historial = hh.codigo
+            where ch.rut_cliente = %s and hh.activa = true LIMIT 1;
+            """, (client.getRut(), ))
+
+            client_data = self.__db.fetchOne()
+            if client_data:
+                client.setResponsable(client_data[0])
+                client.setHabitacion(client_data[1])
 
             clients.append(client.toDict())
 
         return clients
-
-            

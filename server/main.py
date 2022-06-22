@@ -44,7 +44,9 @@ def handleClientsRequests():
 @login_required
 def handleRecordsRequests():
     if request.method == "POST":
-        pass # appply filters
+        content = request.get_json()
+        records = roomHandler.filterRoomHistory(content)
+        return make_response(jsonify({'records': records}), 200)
     else:
         historys = roomHandler.getRoomsHistory()
         return make_response(jsonify({'records': historys}), 200)
