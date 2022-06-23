@@ -3,7 +3,7 @@ from db import DB
 from datetime import datetime
 
 class Client:
-    def __init__(self, rut, nombre, reputacion, responsable=None) -> None:
+    def __init__(self, rut, nombre, reputacion, responsable="no esta ospedado actualmente") -> None:
         self.__rut = rut
         self.__nombre = nombre
         self.__reputacion = reputacion
@@ -86,7 +86,7 @@ class ClientsHandler:
 
             client_data = self.__db.fetchOne()
             if client_data:
-                client.setResponsable(client_data[0])
+                client.setResponsable("pasajero responsable") if client_data[0] == 1 else client.setResponsable("acompañante")
                 client.setHabitacion(client_data[1])
 
             clients.append(client.toDict())

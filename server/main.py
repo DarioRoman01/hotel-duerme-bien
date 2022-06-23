@@ -65,6 +65,12 @@ def handleRecordsRequests():
         historys = roomHandler.getRoomsHistory()
         return make_response(jsonify({'records': historys}), 200)
 
+@app.route("/objects", methods=["GET"])
+@login_required
+def handleObjsRequests():
+    objs = roomHandler.listAllObjects()
+    return make_response(jsonify({'objects': objs}), 200)
+
 
 if __name__ == "__main__":
     global userHandler

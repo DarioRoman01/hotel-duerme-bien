@@ -125,6 +125,10 @@ class RoomHandler:
 
         return detail.toDict()
 
+    def listAllObjects(self):
+        self.__db.queryDB("SELECT * FROM objeto_habitacion")
+        return [RoomObject(obj[0], obj[1], obj[2], obj[3]).toDict() for obj in self.__db.fetchAll()]
+
     def deleteRoom(self, roomId):
         habitacion = self.__db.queryDB("SELECT * FROM habitaicon WHERE codigo = %s", (roomId, ))
         if habitacion is None:
@@ -178,7 +182,7 @@ class RoomObject:
     def toDict(self) -> Dict:
         return {
             "codigo": self.__codigo,
-            "codigo_habitacion": self.__codigo_habitacion,
+            "habitacion": self.__codigo_habitacion,
             "estado": self.__estado,
             "tipo": self.__tipo,
         }
