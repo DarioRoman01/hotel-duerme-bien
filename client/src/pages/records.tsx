@@ -11,16 +11,12 @@ export const Records: React.FC = () => {
   const [room, setRoom] = useState('');
   const [state, setState] = useState('');
   const [rows, setRows] = useState([] as JSX.Element[]);
-  let firstRender = useRef(true);
 
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false
-      getRequest<RecordsResponse>("/records")
-      .then(r => callSetRows(r))
-      .catch(err => console.log(err))
-    }
-  })
+    getRequest<RecordsResponse>("/records")
+    .then(r => callSetRows(r))
+    .catch(err => console.log(err))
+  }, [])
 
   const checkValues = (value: string): string | null => value  === '' ? null : value; 
 

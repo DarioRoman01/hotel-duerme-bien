@@ -35,6 +35,28 @@ export type RecordsResponse = {
   records: Record[]
 }
 
+type RoomDetailObject = {
+  state: string,
+  total: number,
+  type: string
+}
+
+export type RoomDetail = {
+  clients: Client[]
+  objects: RoomDetailObject[] 
+}
+
+export type RoomObject = {
+  codigo: number,
+  habitacion: string,
+  estado: number,
+  tipo: string
+}
+
+export type RoomObjectsResponse = {
+  objects: RoomObject[]
+}
+
 const headers = {
   Accept: "application/json",
   "Content-Type": "application/json",

@@ -8,24 +8,20 @@ import { FloatingLabelInput } from "../components/floatingLabel";
 import { RoomModal } from "../components/roomModal";
 
 export const Rooms: React.FC = () => {
-  let minVal = 1
-  let maxVal = 10
-  const [estado, setEstado] = useState('')
-  const [orientacion, setOrientacion] = useState('')
-  const [capacity, setCapacity] = useState('')
-  const [rows, setRows] = useState([] as JSX.Element[])
-  let firstRender = useRef(true)
-  const [visible, setVisible] = useState(false)
-  const [room, setRoom] = useState({} as Room)
+  let minVal = 1;
+  let maxVal = 10;
+  const [estado, setEstado] = useState('');
+  const [orientacion, setOrientacion] = useState('');
+  const [capacity, setCapacity] = useState('');
+  const [rows, setRows] = useState([] as JSX.Element[]);
+  const [visible, setVisible] = useState(false);
+  const [room, setRoom] = useState({} as Room);
 
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
       getRequest<RoomsResponse>('/rooms')
       .then(r => callSetRows(r))
       .catch(err => console.log(err))
-    }
-  })
+  }, []);
   
   const handleFilterSubmit = () => {
     const filters = {
@@ -55,9 +51,10 @@ export const Rooms: React.FC = () => {
         <td className="p-3 text-center">{room.orientacion}</td>
         <td className="p-3 text-center">{room.estado}</td>
         <td className="p-3 text-center">{room.estado_i}</td>
-        <td className="p-3">
-          <button onClick={() => showModal(room)} className="my-auto mr-2"><Icon icon='fa-solid:eye'/></button>
-          <button className="my-auto mx-2"><Icon icon='bi:trash-fill'/></button>
+        <td className="p-3 flex mt-1 justify-center">
+          <button onClick={() => showModal(room)} className="mr-2"><Icon icon='fa-solid:eye'/></button>
+          <button className="mx-2"><Icon icon='fa6-solid:pen-clip'/></button>
+          <button className="ml-2"><Icon icon='bi:trash-fill'/></button>
         </td>
       </tr>
     )))

@@ -5,6 +5,7 @@ import { Rooms } from './pages/rooms';
 import { Home } from './pages/home';
 import { Clients } from './pages/clients'
 import { Records } from './pages/records'
+import { Objects } from './pages/objects'
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path='/rooms' element={<Rooms/>}/>
         <Route path='/clients' element={<Clients/>}/>
         <Route path='/records' element={<Records />}/>
+        <Route path='/objects' element={<Objects />}/>
       </Routes>
     </div>
   );

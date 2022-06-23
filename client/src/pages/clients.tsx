@@ -5,20 +5,16 @@ import { Navbar } from "../components/navbar";
 import { FloatingLabelInput } from "../components/floatingLabel";
 
 export const Clients: React.FC = () => {
-  const firstRender = useRef(true);
   const [rows, setRows] = useState([] as JSX.Element[])
   const [tipo, setTipo] = useState('');
   const [name, setName] = useState('');
   const [room, setRoomId] = useState('');
 
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      getRequest<CilentResponse>("/clients")
-      .then(c => callSetRows(c))
-      .catch(err => console.log(err)) 
-    }
-  })
+    getRequest<CilentResponse>("/clients")
+    .then(c => callSetRows(c))
+    .catch(err => console.log(err)) 
+  }, [])
 
   const handleFilterSubmit = () => {
     const filters = {
@@ -39,7 +35,7 @@ export const Clients: React.FC = () => {
         <td className="p-3 text-center">{client.rut}</td>
         <td className="p-3 text-center">{client.nombre}</td>
         <td className="p-3 text-center">{client.reputacion}</td>
-        <td className="p-3 text-center">{client.responsable === 1 ? "pasajero resopnasable" : "acompañante"}</td>
+        <td className="p-3 text-center">{client.responsable}</td>
         <td className="p-3 text-center">{client.habitacion}</td>
       </tr>
     )))

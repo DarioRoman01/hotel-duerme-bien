@@ -13,9 +13,10 @@ module.exports = {
     },
     
     extend: {
-      inset: {
-        '1/100': '10%',
-      }
+      animation: {
+        bounce200: 'bounce 1s infinite 200ms',
+        bounce400: 'bounce 1s infinite 400ms',
+    },
     }
   },
   plugins: [],
