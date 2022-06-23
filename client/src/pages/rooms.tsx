@@ -69,7 +69,7 @@ export const Rooms: React.FC = () => {
         <Navbar />
       </div>
       <div className="flex justify-center min-h-fit sm:min-h-screen col-span-12 row-span-5 sm:col-span-9 sm:row-span-9">
-        <RoomModal handleClose={(_: any) => setVisible(false)} room={room} visible={visible} />
+        <RoomModal handleClose={() => setVisible(false)} room={room} visible={visible} />
         <Table columns={["codigo", "capacidad", "orientacion", "estado", "estado inmueble", "acciones"]} rows={rows} />
       </div>
       <div className="bg-contrast col-span-12 row-span-4 sm:col-span-3 sm:row-span-9 min-h-screen p-3">
