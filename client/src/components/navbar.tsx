@@ -24,6 +24,11 @@ export const Navbar = () => {
                   <i className="fab fa-pinterest text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2">Historial</span>
                 </a>
               </li>
+              <li className="nav-item">
+                <a className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-secondary hover:opacity-75" href="/objects">
+                  <i className="fab fa-pinterest text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2">Inventario</span>
+                </a>
+              </li>
             </ul>
           </div>
 					<div className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-end">
