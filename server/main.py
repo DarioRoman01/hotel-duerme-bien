@@ -4,7 +4,7 @@ from db import DB
 from staff import StaffHandler
 from rooms import RoomHandler
 from clients import ClientsHandler
-from utils import login_required
+from utils import login_required, NotFoundError
 
 app = Flask(__name__)
 CORS(app, origins="http://localhost:3000", supports_credentials=True)
@@ -40,6 +40,20 @@ def handleClientsRequests():
         clients = clientsHandler.listAllClients()
         return make_response(jsonify({'clients': clients}), 200)
 
+@app.route("/detail", methods=["GET"])
+@login_required
+def getRoomDetail():
+    args = request.args.to_dict()
+    if args.get('room') == None:
+        make_response(jsonify({'error': 'debe especificar una habitacion'}), 400)
+
+    try:
+        details = roomHandler.getRoomDetail(args.get('room'))
+        return make_response(jsonify(details), 200)
+    except NotFoundError as err:
+        return make_response(jsonify({'error': err}), 404)
+
+
 @app.route("/records", methods=["GET", "POST"])
 @login_required
 def handleRecordsRequests():
@@ -50,7 +64,6 @@ def handleRecordsRequests():
     else:
         historys = roomHandler.getRoomsHistory()
         return make_response(jsonify({'records': historys}), 200)
-
 
 
 if __name__ == "__main__":

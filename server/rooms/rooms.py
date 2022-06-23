@@ -106,9 +106,24 @@ class RoomHandler:
         self.__db.queryDB(query)
         return [Room(r[0], r[1], r[2], r[3], round(r[4], 1)).toDict() for r in self.__db.fetchAll()]
 
-    def getAllRoomObjects(self, codgio_habitacion):
-        self.__db.queryDB("SELECT * FROM objeto_habitacion WHERE codigo_habitacion = %s", (codgio_habitacion))
-        return [RoomObject(o[0], o[1], o[2], o[3]).toDict() for o in self.__db.fetchAll()]   
+    def getRoomDetail(self, roomId):
+        self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (roomId, ), f"no se encotro una habitacion con el codigo {roomId}")
+        self.__db.queryDB("SELECT DISTINCT tipo, COUNT(tipo), AVG(estado) FROM objeto_habitacion WHERE codigo_habitacion = %s GROUP BY tipo;", (roomId, ))
+        objects = [{'type': d[0], 'total': d[1], 'state': d[2]} for d in self.__db.fetchAll()]
+        detail = RoomDetail(objects)
+
+        self.__db.queryDB(""" 
+        SELECT c.rut, c.nombre, c.reputacion FROM historial_habitacion
+        INNER JOIN client_historial ch on historial_habitacion.codigo = ch.codigo_historial
+        INNER JOIN cliente c on ch.rut_cliente = c.rut
+        WHERE codigo_habitacion = %s AND activa = TRUE;
+        """, (roomId, ))
+
+        clients = self.__db.fetchAll()
+        if clients != None:
+            detail.setClients([Client(c[0], c[1], c[2]).toDict() for c in clients])
+
+        return detail.toDict()
 
     def deleteRoom(self, roomId):
         habitacion = self.__db.queryDB("SELECT * FROM habitaicon WHERE codigo = %s", (roomId, ))
@@ -136,6 +151,22 @@ class Room:
             "estado": self.estado,
             "estado_i": self.estado_i
         }
+
+class RoomDetail:
+    def __init__(self, objs) -> None:
+        self.__objs = objs
+        self.__clients = []
+
+    def setClients(self, clients):
+        self.__clients = clients
+
+    def toDict(self) -> Dict:
+        return {
+            "objects": self.__objs,
+            "clients": self.__clients
+        }
+
+        
 
 class RoomObject:
     def __init__(self, codigo, codigo_habitacion, estado, tipo) -> None:
