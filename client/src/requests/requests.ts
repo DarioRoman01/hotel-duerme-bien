@@ -1,5 +1,5 @@
 export type Room = {
-  codigo: number,
+  codigo: string,
   capacidad: number,
   orientacion: string,
   estado: string,

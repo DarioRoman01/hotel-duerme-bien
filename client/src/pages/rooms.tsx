@@ -1,10 +1,11 @@
 import React, {useEffect, useRef, useState} from "react";
-import { getRequest, RoomsResponse, postRequest } from "../requests/requests";
+import { getRequest, RoomsResponse, postRequest, Room } from "../requests/requests";
 import { Table } from "../components/table";
 import { Navbar } from "../components/navbar";
 import { Icon } from '@iconify/react';
 import { MultiRangeSlider } from "../components/slider";
 import { FloatingLabelInput } from "../components/floatingLabel";
+import { RoomModal } from "../components/roomModal";
 
 export const Rooms: React.FC = () => {
   let minVal = 1
@@ -14,6 +15,8 @@ export const Rooms: React.FC = () => {
   const [capacity, setCapacity] = useState('')
   const [rows, setRows] = useState([] as JSX.Element[])
   let firstRender = useRef(true)
+  const [visible, setVisible] = useState(false)
+  const [room, setRoom] = useState({} as Room)
 
   useEffect(() => {
     if (firstRender.current) {
@@ -39,6 +42,11 @@ export const Rooms: React.FC = () => {
   }
 
 
+  const showModal = (r: Room) => {
+    setRoom(r)
+    setVisible(true)
+  }
+
   const callSetRows = (r: RoomsResponse) => {
     setRows(r.rooms.map(room => (
       <tr key={room.codigo} className="bg-contrast text-secondary rounded-md">
@@ -48,7 +56,7 @@ export const Rooms: React.FC = () => {
         <td className="p-3 text-center">{room.estado}</td>
         <td className="p-3 text-center">{room.estado_i}</td>
         <td className="p-3">
-          <button className="my-auto mr-2"><Icon icon='fa-solid:eye'/></button>
+          <button onClick={() => showModal(room)} className="my-auto mr-2"><Icon icon='fa-solid:eye'/></button>
           <button className="my-auto mx-2"><Icon icon='bi:trash-fill'/></button>
         </td>
       </tr>
@@ -61,6 +69,7 @@ export const Rooms: React.FC = () => {
         <Navbar />
       </div>
       <div className="flex justify-center min-h-fit sm:min-h-screen col-span-12 row-span-5 sm:col-span-9 sm:row-span-9">
+        <RoomModal handleClose={(_: any) => setVisible(false)} room={room} visible={visible} />
         <Table columns={["codigo", "capacidad", "orientacion", "estado", "estado inmueble", "acciones"]} rows={rows} />
       </div>
       <div className="bg-contrast col-span-12 row-span-4 sm:col-span-3 sm:row-span-9 min-h-screen p-3">
