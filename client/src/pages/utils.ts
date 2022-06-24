@@ -1,0 +1,1 @@
+export const checkValues = (value: string): string | null => value  === '' ? null : value; 

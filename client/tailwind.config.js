@@ -9,7 +9,8 @@ module.exports = {
       "secondary": "#d69f5b",
       "last": "#EBEBEB",
       "contrast": "#2f4a62",
-      "black": "#000000"
+      "black": "#000000",
+      "red": "#ef4444"
     },
     
     extend: {

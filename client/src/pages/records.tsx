@@ -4,6 +4,7 @@ import { Table } from "../components/table";
 import { getRequest, RecordsResponse, postRequest } from "../requests/requests";
 import { DatePicker } from "../components/datePickers";
 import { FloatingLabelInput } from "../components/floatingLabel";
+import { checkValues } from "./utils";
 
 export const Records: React.FC = () => {
   const [startDate, setStartDate] = useState('');
@@ -17,8 +18,6 @@ export const Records: React.FC = () => {
     .then(r => callSetRows(r))
     .catch(err => console.log(err))
   }, [])
-
-  const checkValues = (value: string): string | null => value  === '' ? null : value; 
 
   const handleSubmit = () => {
     // we dont have any filter to apply

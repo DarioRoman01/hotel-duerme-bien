@@ -6,28 +6,39 @@ import { Icon } from '@iconify/react';
 import { MultiRangeSlider } from "../components/slider";
 import { FloatingLabelInput } from "../components/floatingLabel";
 import { RoomModal } from "../components/roomModal";
+import { checkValues } from "./utils";
 
 export const Rooms: React.FC = () => {
+  const [rows, setRows] = useState([] as JSX.Element[]);
+  const [visible, setVisible] = useState(false);
+  const [room, setRoom] = useState({} as Room);
+  const [creation, setCreation] = useState(false);
+  const [err, setErr] = useState('')
+  const [show, setShow] = useState(false);
+
+  // filters inputs state
   let minVal = 1;
   let maxVal = 10;
   const [estado, setEstado] = useState('');
   const [orientacion, setOrientacion] = useState('');
   const [capacity, setCapacity] = useState('');
-  const [rows, setRows] = useState([] as JSX.Element[]);
-  const [visible, setVisible] = useState(false);
-  const [room, setRoom] = useState({} as Room);
+
+  // creation inputs state
+  const [newCodigo, setNewCodigo] = useState('');
+  const [newOrientacion, setNewOrientacion] = useState('');
+  const [newCapacity, setNewCapacity] = useState('');
 
   useEffect(() => {
       getRequest<RoomsResponse>('/rooms')
       .then(r => callSetRows(r))
       .catch(err => console.log(err))
-  }, []);
+  }, [creation]);
   
   const handleFilterSubmit = () => {
     const filters = {
-      'estado': estado === '' ? null : estado,
-      'orientacion': orientacion === '' ? null : orientacion,
-      'capacidad': capacity === '' ? null : capacity,
+      'estado': checkValues(estado),
+      'orientacion': checkValues(orientacion),
+      'capacidad': checkValues(capacity),
       'min': minVal,
       'max': maxVal,
     }
@@ -35,6 +46,28 @@ export const Rooms: React.FC = () => {
     postRequest<RoomsResponse>(filters, 'rooms')
     .then(r => callSetRows(r))
     .catch(err => console.log(err))
+  }
+
+  const handleCreationSubmit = () => {
+    if (!checkValues(newCodigo) || !checkValues(newCapacity) || !checkValues(newOrientacion)) {
+      setErr('Todos los campos son requeridos')
+      setShow(true)
+      return
+    }
+
+    setShow(false)
+    const body = {
+      code: newCodigo,
+      capacity: newCapacity,
+      orientation: newOrientacion
+    }
+
+    postRequest<any>(body, 'rooms/create')
+    .then(_ => setCreation(!creation))
+    .catch(err => {
+      setErr(err.message)
+      setShow(true)
+    })
   }
 
 
@@ -107,9 +140,37 @@ export const Rooms: React.FC = () => {
           </div>
           <div className="min-w-full">
             <button onClick={handleFilterSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
-              Filtrar
+              Agregar Habitacion
             </button>
           </div>
+          <div className="my-3 text-center">
+            <label className="text-3xl text-secondary text-bold">Filtros</label>
+          </div>
+          <div className="mb-3 min-w-full">
+              <FloatingLabelInput placeholder="Codigo" type='text' onChange={setNewCodigo} />
+          </div>
+          <div className="mb-3 min-w-full">
+              <FloatingLabelInput placeholder="Capacidad" type='text' onChange={setNewCapacity} />
+          </div>
+          <div className="mb-3 min-w-full">
+            <select value={newOrientacion} onChange={e => setNewOrientacion(e.target.value)} className="form-select appearance-none block w-full px-3 py-1.5 text-base font-normal text-secondary bg-contrast bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:border-blue-600 focus:outline-none" aria-label="Default select example">
+                <option value=''>Orientacion</option>
+                <option value="norte">Norte</option>
+                <option value="sur">Sur</option>
+                <option value="este">Este</option>
+                <option value="oeste">Oeste</option>
+            </select>
+          </div>
+          <div className="mb-3 min-w-full">
+            <button onClick={handleCreationSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
+              Agregar
+            </button>
+          </div>
+          {show ?
+            <div className="my-3 min-w-full rounded-md border border-red text-red p-2">
+              <p>{err}</p>
+            </div> : null
+          }
         </div>
       </div>
     </div>
