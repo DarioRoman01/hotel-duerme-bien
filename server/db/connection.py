@@ -113,11 +113,10 @@ class DB:
         """trae todos los elementos actualmente guardados en el cursor"""
         return self.__cursor.fetchall()
 
-    def checkExistanse(self, query, args, errMessage):
+    def checkExistanse(self, query, args):
         self.queryDB(query, args)
         obj = self.fetchOne()
-        if obj is None:
-            raise NotFoundError(errMessage)
+        return False if obj is None else True
 
     def checkCreation(self, result):
         if not result.with_rows:

@@ -6,20 +6,23 @@ class RoomHandler:
     def __init__(self, db: DB) -> None:
         self.__db = db
 
-    def createRoom(self, capacity, orientation, occupied):
-        self.__db.queryDB("INSERT INTO habitacion(capacidad, orientacion, ocupada) VALUES (%s, %s, %d)", capacity, orientation, occupied)
+    def createRoom(self, code, capacity, orientation):
+        if self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (code, )):
+            return {'error': f'ya existe una habitacion con el codigo {code}'}
+
+        self.__db.queryDB("INSERT INTO habitacion(codigo, capacidad, orientacion) VALUES (%s ,%s, %s)", (code, capacity, orientation))
         self.__db.commit()
-        return "success"
+        return {'ok': 'ok'}
 
     def listAllRooms(self):
         self.__db.queryDB("""
             SELECT h.codigo, h.capacidad, h.orientacion, h.estado, AVG(oh.estado) as 'estado' FROM habitacion as h
-            INNER JOIN objeto_habitacion AS oh ON oh.codigo_habitacion = h.codigo
+            LEFT JOIN objeto_habitacion AS oh ON oh.codigo_habitacion = h.codigo
             WHERE eliminada = false
             group by h.codigo;
         """, None)
 
-        return [Room(r[0], r[1], r[2], r[3], round(r[4], 1)).toDict() for r in self.__db.fetchAll()]
+        return [Room(r[0], r[1], r[2], r[3], r[4]).toDict() for r in self.__db.fetchAll()]
 
     def appendClientsToRecord(self, raw_records):
         records = []
@@ -107,7 +110,9 @@ class RoomHandler:
         return [Room(r[0], r[1], r[2], r[3], round(r[4], 1)).toDict() for r in self.__db.fetchAll()]
 
     def getRoomDetail(self, roomId):
-        self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (roomId, ), f"no se encotro una habitacion con el codigo {roomId}")
+        if not self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (roomId, )):
+            return {'error': f"no se encotro una habitacion con el codigo {roomId}"}
+            
         self.__db.queryDB("SELECT DISTINCT tipo, COUNT(tipo), AVG(estado) FROM objeto_habitacion WHERE codigo_habitacion = %s GROUP BY tipo;", (roomId, ))
         objects = [{'type': d[0], 'total': d[1], 'state': d[2]} for d in self.__db.fetchAll()]
         detail = RoomDetail(objects)
@@ -153,7 +158,7 @@ class Room:
             "capacidad": self.capacidad,
             "orientacion": self.orientacion,
             "estado": self.estado,
-            "estado_i": self.estado_i
+            "estado_i": round(self.estado_i, 1) if self.estado_i != None else 0
         }
 
 class RoomDetail:
@@ -169,8 +174,6 @@ class RoomDetail:
             "objects": self.__objs,
             "clients": self.__clients
         }
-
-        
 
 class RoomObject:
     def __init__(self, codigo, codigo_habitacion, estado, tipo) -> None:

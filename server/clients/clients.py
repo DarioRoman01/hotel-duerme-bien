@@ -3,11 +3,11 @@ from db import DB
 from datetime import datetime
 
 class Client:
-    def __init__(self, rut, nombre, reputacion, responsable="no esta ospedado actualmente") -> None:
+    def __init__(self, rut, nombre, reputacion, tipo="no esta ospedado actualmente") -> None:
         self.__rut = rut
         self.__nombre = nombre
         self.__reputacion = reputacion
-        self.__responsable = responsable
+        self.__tipo = tipo
         self.__habitacion = "no esta hospedado actualmente"
 
     def toDict(self) -> Dict:
@@ -16,14 +16,20 @@ class Client:
             'nombre': self.__nombre,
             'reputacion': self.__reputacion,
             'habitacion': self.__habitacion,
-            'responsable': self.__responsable,
+            'responsable': self.__tipo,
         }
     
     def getRut(self):
         return self.__rut
+    
+    def getTipo(self):
+        return self.__tipo
 
-    def setResponsable(self, responsable):
-        self.__responsable = responsable
+    def getHabitacion(self):
+        return self.__habitacion
+
+    def setTipo(self, tipo):
+        self.__tipo = tipo
 
     def setHabitacion(self, codigo_habitacion) -> None:
         self.__habitacion = codigo_habitacion
@@ -32,20 +38,24 @@ class ClientsHandler:
     def __init__(self, db: DB) -> None:
         self.__db = db
 
-    def createClient(self, rut: str, nombre: str) -> None:
+    def createClient(self, rut: str, nombre: str) -> Dict:
+        if self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (rut,)):
+            return {'error': f'ya existe un cliente con el rut: {rut}'}
+
         self.__db.queryDB("INSERT INTO cliente (rut, nombre, reputacion) VALUES (%s, %s, 100)", (rut, nombre))
         self.__db.commit()
+        return {'ok': 'ok'}
 
 
     def asingRoom(self, codigo_habitacion: int, codigo_cliente: str, acompanantes: list[str], fecha_termino: str):
-        self.__db.checkExistanse(
-            "SELECT * FROM habitacion WHERE codigo = %s", (codigo_habitacion,), 
-            f"No se encontro una habitacion con el codigo {codigo_habitacion}"
-        )
+        if not self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (codigo_habitacion,)):
+            return f"No se encontro una habitacion con el codigo {codigo_habitacion}"
 
-        self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (codigo_cliente,), f"No se encontro un cliente con rut {codigo_cliente}")
+        if not self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (codigo_cliente,)):
+            return {"error": f"No se encontro un cliente con rut {codigo_cliente}"}
         for acompanante in acompanantes:
-            self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (acompanante,), f"No se encontro un cliente con rut {acompanante}")
+            if not self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (acompanante,), ):
+                return {"error": f"No se encontro un cliente con rut {acompanante}"}
 
         now = datetime.now()
         fecha_asignacion = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -61,16 +71,10 @@ class ClientsHandler:
             res = self.__db.queryDB("INSERT INTO cliente_historial (rut_cliente, codigo_historial, responsable) VALUES (%s, %s, false)", (acompanante, historial[0]))
             self.__db.checkCreation(res)
 
-    def listCurrentClients(self):
-        self.__db.queryDB("""
-            SELECT c.rut, c.nombre, c.reputacion, ch.responsable, h.codigo_habitacion FROM cliente c
-            INNER JOIN client_historial as ch ON ch.rut_cliente = c.rut
-            INNER JOIN historial_habitacion as h ON h.codigo = ch.codigo_historial
-            WHERE h.activa = true;
-        """)
+        self.__db.commit()
+        return {'ok': 'ok'}
 
-        clientes = self.__db.fetchAll()
-        return [Client(c[0], c[1], c[2], c[3], c[4]).toDict() for c in clientes]
+            
 
     def listAllClients(self):
         self.__db.queryDB("SELECT * FROM cliente")
@@ -86,9 +90,48 @@ class ClientsHandler:
 
             client_data = self.__db.fetchOne()
             if client_data:
-                client.setResponsable("pasajero responsable") if client_data[0] == 1 else client.setResponsable("acompañante")
+                client.setTipo("pasajero responsable") if client_data[0] == 1 else client.setTipo("acompañante")
                 client.setHabitacion(client_data[1])
 
             clients.append(client.toDict())
 
         return clients
+
+    def filterClients(self, filters: dict):
+        query = "SELECT * FROM cliente"
+        if filters.get("name") != None:
+            query += f" WHERE nombre like '%{filters.get('name')}%'"
+
+        self.__db.queryDB(query)
+        raw_clients = self.__db.fetchAll()
+        clients = []
+        for c in raw_clients:
+            client = Client(c[0], c[1], c[2])
+            self.__db.queryDB("""
+            select ch.responsable, hh.codigo_habitacion from client_historial ch
+            inner join historial_habitacion hh on ch.codigo_historial = hh.codigo
+            where ch.rut_cliente = %s and hh.activa = true LIMIT 1;
+            """, (client.getRut(), ))
+
+            client_data = self.__db.fetchOne()
+            if client_data:
+                client.setTipo("pasajero responsable") if client_data[0] == 1 else client.setTipo("acompañante")
+                client.setHabitacion(client_data[1])
+
+            if filters.get('tipo') != None and filters.get('room') != None:
+                if client.getHabitacion() == filters.get('room') and client.getTipo() == filters.get("tipo"):
+                    clients.append(client.toDict())
+                
+            elif filters.get("tipo") != None:
+                if client.getTipo() == filters.get("tipo"):
+                    clients.append(client.toDict())
+
+            elif filters.get("room") != None:
+                if client.getHabitacion() == filters.get("room"):
+                    clients.append(client.toDict())
+            else:
+                clients.append(client.toDict())
+
+
+        return clients
+
