@@ -1,10 +1,10 @@
 from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
-from db import DB   
+from db import DB
 from staff import StaffHandler
 from rooms import RoomHandler
 from clients import ClientsHandler
-from utils import login_required, NotFoundError
+from utils import login_required, NotFoundError, NotCreatedErorr
 
 app = Flask(__name__)
 CORS(app, origins="http://localhost:3000", supports_credentials=True)
@@ -35,10 +35,25 @@ def handleRoomRequest():
 @login_required
 def handleClientsRequests():
     if request.method == "POST":
-        pass # appply filters
+        filters = request.get_json()
+        clients = clientsHandler.filterClients(filters)
+        return make_response(jsonify({'clients': clients}), 200)
     else:
         clients = clientsHandler.listAllClients()
         return make_response(jsonify({'clients': clients}), 200)
+
+
+@app.route('/clients/create', methods=["POST"])
+def createClient():
+    body = request.get_json()
+    res = clientsHandler.createClient(body.get('rut'), body.get('name'))
+    return make_response(jsonify(res), 200) if res.get('ok') else make_response(res, 400)
+
+@app.route('/rooms/create', methods=["POST"])
+def createRoom():
+    body = request.get_json()
+    res = roomHandler.createRoom(body['code'], body['capacity'], body['orientation'])
+    return make_response(jsonify(res), 200) if res.get('ok') else make_response(res, 400)
 
 @app.route("/detail", methods=["GET"])
 @login_required
