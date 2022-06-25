@@ -4,7 +4,7 @@ from db import DB
 from staff import StaffHandler
 from rooms import RoomHandler
 from clients import ClientsHandler
-from utils import login_required, NotFoundError, NotCreatedErorr
+from utils import login_required, NotFoundError, AlreadyExistsError
 
 app = Flask(__name__)
 CORS(app, origins="http://localhost:3000", supports_credentials=True)
@@ -37,6 +37,18 @@ def listUsers():
     users = userHandler.listUsers()
     return make_response(jsonify({'users': users}), 200)
 
+@app.route("/users/create", methods=["GET"])
+@login_required
+def createUser():
+    data = request.get_json()
+    try:
+        userHandler.crearUsuario(data.get("username"), data.get("password"), "gerente")
+        return make_response(jsonify({'ok': 'ok'}), 200)
+    except AlreadyExistsError as err:
+        return make_response(jsonify({'error': err}), 400) 
+    except:
+        return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
+
 @app.route("/clients", methods=["GET", "POST"])
 @login_required
 def handleClientsRequests():
@@ -51,28 +63,39 @@ def handleClientsRequests():
 
 @app.route('/clients/create', methods=["POST"])
 def createClient():
-    body = request.get_json()
-    res = clientsHandler.createClient(body.get('rut'), body.get('name'))
-    return make_response(jsonify(res), 200) if res.get('ok') else make_response(res, 400)
+    try:
+        body = request.get_json()
+        clientsHandler.createClient(body.get('rut'), body.get('name'))
+        return make_response(jsonify({'ok': 'ok'}), 200)
+    except AlreadyExistsError as err:
+        return make_response(jsonify({'error': err}), 400)
+    except:
+        return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
 @app.route('/rooms/create', methods=["POST"])
 def createRoom():
-    body = request.get_json()
-    res = roomHandler.createRoom(body['code'], body['capacity'], body['orientation'])
-    return make_response(jsonify(res), 200) if res.get('ok') else make_response(res, 400)
+    try:
+        body = request.get_json()
+        roomHandler.createRoom(body['code'], body['capacity'], body['orientation'])
+        return make_response(jsonify({'ok': 'ok'}), 200)
+    except AlreadyExistsError as err:
+        return make_response(jsonify({'error': err}), 400)
+    except:
+        return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
 @app.route("/detail", methods=["GET"])
 @login_required
 def getRoomDetail():
-    args = request.args.to_dict()
-    if args.get('room') == None:
-        make_response(jsonify({'error': 'debe especificar una habitacion'}), 400)
-
     try:
+        args = request.args.to_dict()
+        if args.get('room') == None:
+            make_response(jsonify({'error': 'debe especificar una habitacion'}), 400)
         details = roomHandler.getRoomDetail(args.get('room'))
         return make_response(jsonify(details), 200)
     except NotFoundError as err:
         return make_response(jsonify({'error': err}), 404)
+    except:
+        return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
 
 @app.route("/records", methods=["GET", "POST"])
@@ -97,6 +120,17 @@ def handleObjsRequests():
     objs = roomHandler.listAllObjects()
     return make_response(jsonify({'objects': objs}), 200)
 
+@app.route("/objects/create", methods=["POST"])
+@login_required
+def createObject():
+    try:
+        data = request.get_json()
+        roomHandler.createRoomObject(data.get('room'), data.get('state'), data.get('type'))
+        return make_response(jsonify({'ok': 'ok'}))
+    except NotFoundError as err:
+        return make_response(jsonify({'error': err}), 400)
+    except:
+        return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
 if __name__ == "__main__":
     global userHandler

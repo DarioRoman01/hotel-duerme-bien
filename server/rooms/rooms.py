@@ -1,6 +1,7 @@
 from typing import Dict
 from db import DB
 from clients import Client
+from utils import AlreadyExistsError, NotFoundError
 
 class RoomHandler:
     def __init__(self, db: DB) -> None:
@@ -8,11 +9,10 @@ class RoomHandler:
 
     def createRoom(self, code, capacity, orientation):
         if self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (code, )):
-            return {'error': f'ya existe una habitacion con el codigo {code}'}
+            raise AlreadyExistsError(f'ya existe una habitacion con el codigo {code}')
 
         self.__db.queryDB("INSERT INTO habitacion(codigo, capacidad, orientacion) VALUES (%s ,%s, %s)", (code, capacity, orientation))
         self.__db.commit()
-        return {'ok': 'ok'}
 
     def listAllRooms(self):
         self.__db.queryDB("""
@@ -112,7 +112,7 @@ class RoomHandler:
 
     def getRoomDetail(self, roomId):
         if not self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (roomId, )):
-            return {'error': f"no se encotro una habitacion con el codigo {roomId}"}
+            raise NotFoundError(f"no se encotro una habitacion con el codigo {roomId}")
             
         self.__db.queryDB("SELECT DISTINCT tipo, COUNT(tipo), AVG(estado) FROM objeto_habitacion WHERE codigo_habitacion = %s GROUP BY tipo;", (roomId, ))
         objects = [{'type': d[0], 'total': d[1], 'state': d[2]} for d in self.__db.fetchAll()]
@@ -176,6 +176,13 @@ class RoomHandler:
         return [RoomObject(obj[0], obj[1], obj[2], obj[3]).toDict() for obj in self.__db.fetchAll()]
 
 
+
+    def createRoomObject(self, room, state, type):
+        if not self.__db.checkExistanse('SELECT * FROM habitacion WHERE codigo = %s', (room, )):
+            raise NotFoundError(f'no se encontro una habitacion con el codigo: {room}')
+
+        self.__db.queryDB('INSERT INTO objeto_habitacion (codigo_habitacion, estado, tipo) VALUES (%s, %s, %s)', (room, state, type))
+        self.__db.commit()
 
     def deleteRoom(self, roomId):
         habitacion = self.__db.queryDB("SELECT * FROM habitaicon WHERE codigo = %s", (roomId, ))

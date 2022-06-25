@@ -1,6 +1,7 @@
 from typing import Dict
 from db import DB
 from datetime import datetime
+from utils import AlreadyExistsError
 
 class Client:
     def __init__(self, rut, nombre, reputacion, tipo="no esta ospedado actualmente") -> None:
@@ -40,12 +41,10 @@ class ClientsHandler:
 
     def createClient(self, rut: str, nombre: str) -> Dict:
         if self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (rut,)):
-            return {'error': f'ya existe un cliente con el rut: {rut}'}
+            raise AlreadyExistsError(f'ya existe un cliente con el rut: {rut}')
 
         self.__db.queryDB("INSERT INTO cliente (rut, nombre, reputacion) VALUES (%s, %s, 100)", (rut, nombre))
         self.__db.commit()
-        return {'ok': 'ok'}
-
 
     def asingRoom(self, codigo_habitacion: int, codigo_cliente: str, acompanantes: list[str], fecha_termino: str):
         if not self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (codigo_habitacion,)):
