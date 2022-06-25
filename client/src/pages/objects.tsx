@@ -53,7 +53,7 @@ export const Objects: React.FC = () => {
       return
     }
 
-    if (state > 10 && state < 1) {
+    if (state > 10 || state < 1) {
       setErr('los numeros ingresador en Estado deben estar en el rango de 1 y 10')
       setShow(true)
       return

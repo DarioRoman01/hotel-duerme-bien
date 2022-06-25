@@ -1,7 +1,7 @@
 from typing import Dict
 from db import DB
 from datetime import datetime
-from utils import AlreadyExistsError
+from utils import AlreadyExistsError, NotCompatibleError, NotFoundError
 
 class Client:
     def __init__(self, rut, nombre, reputacion, tipo="no esta ospedado actualmente") -> None:
@@ -39,41 +39,44 @@ class ClientsHandler:
     def __init__(self, db: DB) -> None:
         self.__db = db
 
-    def createClient(self, rut: str, nombre: str) -> Dict:
+    def createClient(self, rut: str, nombre: str):
         if self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (rut,)):
             raise AlreadyExistsError(f'ya existe un cliente con el rut: {rut}')
 
         self.__db.queryDB("INSERT INTO cliente (rut, nombre, reputacion) VALUES (%s, %s, 100)", (rut, nombre))
         self.__db.commit()
 
-    def asingRoom(self, codigo_habitacion: int, codigo_cliente: str, acompanantes: list[str], fecha_termino: str):
+    def asingRoom(self, codigo_habitacion: int,acompanantes: list[str], fecha_termino: str, responsable: str):
         if not self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (codigo_habitacion,)):
-            return f"No se encontro una habitacion con el codigo {codigo_habitacion}"
+            raise NotFoundError(f"No se encontro una habitacion con el codigo {codigo_habitacion}")
 
-        if not self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (codigo_cliente,)):
-            return {"error": f"No se encontro un cliente con rut {codigo_cliente}"}
+        roomData = self.__db.fetchOne()
+        if len(acompanantes) > roomData[1]:
+            raise NotCompatibleError(f'La habitacion {codigo_habitacion} solo tiene capacidad para {roomData[1]}')
+
+        if not self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (responsable,)):
+            raise NotFoundError(f"No se encontro un cliente con rut {responsable}")
+
         for acompanante in acompanantes:
             if not self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (acompanante,), ):
-                return {"error": f"No se encontro un cliente con rut {acompanante}"}
+                raise NotFoundError(f"No se encontro un cliente con rut {acompanante}")
 
         now = datetime.now()
         fecha_asignacion = now.strftime("%d/%m/%Y %H:%M:%S")
         result = self.__db.queryDB("""
-            INSERT INTO historial_habitacion (codigo_habitacion, codigo_cliente, activa, fecha_asignacion, fecha_termino)
-            VALUES(%s, %s, true, %s, %s);
-        """, (codigo_habitacion, codigo_cliente, fecha_asignacion, fecha_termino))
+            INSERT INTO historial_habitacion (codigo_habitacion, activa, fecha_asignacion, fecha_termino)
+            VALUES(%s, true, %s, %s);
+        """, (codigo_habitacion, fecha_asignacion, fecha_termino))
         
         historial =  result.fetchone()
-        res = self.__db.queryDB("INSERT INTO cliente_historial (rut_cliente, codigo_historial, responsable) VALUES (%s, %s, true)", (codigo_cliente, historial[0]))
+        res = self.__db.queryDB("INSERT INTO cliente_historial (rut_cliente, codigo_historial, responsable) VALUES (%s, %s, true)", (responsable, historial[0]))
         self.__db.checkCreation(res)
+
         for acompanante in acompanantes:
             res = self.__db.queryDB("INSERT INTO cliente_historial (rut_cliente, codigo_historial, responsable) VALUES (%s, %s, false)", (acompanante, historial[0]))
             self.__db.checkCreation(res)
 
         self.__db.commit()
-        return {'ok': 'ok'}
-
-            
 
     def listAllClients(self):
         self.__db.queryDB("SELECT * FROM cliente")

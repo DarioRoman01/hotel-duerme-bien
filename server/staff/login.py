@@ -25,7 +25,7 @@ class StaffHandler:
     def crearUsuario(self, username, pwd, userType):
         """crea un usuario en la base de datos y hashea el password para que solo el usuario conozca su contraseña"""
 
-        if self.__db.checkExistanse("SELECT username FROM usuario WHERE username = %s", (username, )):
+        if self.__db.checkExistanse("SELECT * FROM usuario WHERE username = %s", (username, )):
             raise AlreadyExistsError(f"ya existe un usuario con el nombre: {username}")
 
         salt = bcrypt.gensalt()

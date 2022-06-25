@@ -37,7 +37,7 @@ def listUsers():
     users = userHandler.listUsers()
     return make_response(jsonify({'users': users}), 200)
 
-@app.route("/users/create", methods=["GET"])
+@app.route("/users/create", methods=["POST"])
 @login_required
 def createUser():
     data = request.get_json()
@@ -45,8 +45,9 @@ def createUser():
         userHandler.crearUsuario(data.get("username"), data.get("password"), "gerente")
         return make_response(jsonify({'ok': 'ok'}), 200)
     except AlreadyExistsError as err:
-        return make_response(jsonify({'error': err}), 400) 
-    except:
+        return make_response(jsonify({'error': str(err)}), 400) 
+    except BaseException as err:
+        print(err)
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
 @app.route("/clients", methods=["GET", "POST"])
@@ -68,7 +69,7 @@ def createClient():
         clientsHandler.createClient(body.get('rut'), body.get('name'))
         return make_response(jsonify({'ok': 'ok'}), 200)
     except AlreadyExistsError as err:
-        return make_response(jsonify({'error': err}), 400)
+        return make_response(jsonify({'error': str(err)}), 400)
     except:
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
@@ -79,8 +80,9 @@ def createRoom():
         roomHandler.createRoom(body['code'], body['capacity'], body['orientation'])
         return make_response(jsonify({'ok': 'ok'}), 200)
     except AlreadyExistsError as err:
-        return make_response(jsonify({'error': err}), 400)
-    except:
+        return make_response(jsonify({'error': str(err)}), 400)
+    except BaseException as err:
+        print(err)
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
 @app.route("/detail", methods=["GET"])
@@ -93,7 +95,7 @@ def getRoomDetail():
         details = roomHandler.getRoomDetail(args.get('room'))
         return make_response(jsonify(details), 200)
     except NotFoundError as err:
-        return make_response(jsonify({'error': err}), 404)
+        return make_response(jsonify({'error': str(err)}), 404)
     except:
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
@@ -128,7 +130,7 @@ def createObject():
         roomHandler.createRoomObject(data.get('room'), data.get('state'), data.get('type'))
         return make_response(jsonify({'ok': 'ok'}))
     except NotFoundError as err:
-        return make_response(jsonify({'error': err}), 400)
+        return make_response(jsonify({'error': str(err)}), 400)
     except:
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
