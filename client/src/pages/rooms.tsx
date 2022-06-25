@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import { getRequest, RoomsResponse, postRequest, Room } from "../requests/requests";
 import { Table } from "../components/table";
 import { Navbar } from "../components/navbar";
@@ -6,9 +6,10 @@ import { Icon } from '@iconify/react';
 import { MultiRangeSlider } from "../components/slider";
 import { FloatingLabelInput } from "../components/floatingLabel";
 import { RoomModal } from "../components/roomModal";
-import { checkValues, toTitle } from "./utils";
+import { checkValues } from "./utils";
 import { Select } from "../components/select";
-import { FormWrapper } from "../components/wrappers";
+import { FormWrapper, LayaoutWrapper } from "../components/wrappers";
+import { ErrorAlert } from "../components/error";
 
 export const Rooms: React.FC = () => {
   const [rows, setRows] = useState([] as JSX.Element[]);
@@ -97,52 +98,40 @@ export const Rooms: React.FC = () => {
   }
 
   return (
-    <div className="grid grid-cols-12 grid-rows-12 min-w-full">
-      <div className="bg-contrast row-span-3 col-span-12 h-16">
-        <Navbar />
+    <LayaoutWrapper 
+      modal={<RoomModal handleClose={() => setVisible(false)} room={room} visible={visible} />} 
+      customTable={<Table columns={["codigo", "capacidad", "orientacion", "estado", "estado inmueble", "acciones"]} rows={rows} />}
+    >
+      <div className="mb-3 text-center">
+        <label className="text-3xl text-secondary text-bold">Filtros</label>
       </div>
-      <div className="flex justify-center min-h-fit sm:min-h-screen col-span-12 row-span-5 sm:col-span-9 sm:row-span-9">
-        <RoomModal handleClose={() => setVisible(false)} room={room} visible={visible} />
-        <Table columns={["codigo", "capacidad", "orientacion", "estado", "estado inmueble", "acciones"]} rows={rows} />
+      <FormWrapper children={<Select handleChange={(e) => setEstado(e.target.value)} options={[['', 'Estado'], ['ocupada', 'Ocupada'], ['reservada', 'Reservada'], ['libre', 'Libre']]}/>} />
+      <FormWrapper children={<Select handleChange={e => setOrientacion(e.target.value)} options={[['', 'Orientacion'], ['norte', 'Norte'], ['sur', 'Sur'], ['este', 'Este'], ['oeste', 'Oeste']]} />} />
+      <div className="min-w-full text-center mb-8">
+        <label className="mt-3 text-xl text-secondary">Estado Inventario</label>
+        <MultiRangeSlider min={minVal} max={maxVal} onChange={({ min, max }: { min: number; max: number }) => { 
+          minVal = min; 
+          maxVal = max;
+        }}/>
       </div>
-      <div className="bg-contrast col-span-12 row-span-4 sm:col-span-3 sm:row-span-9 min-h-screen p-3">
-        <div className="flex flex-col justify-center items-center p-5">
-          <div className="mb-3 text-center">
-            <label className="text-3xl text-secondary text-bold">Filtros</label>
-          </div>
-          <FormWrapper children={<Select handleChange={(e) => setEstado(e.target.value)} options={[['', 'Estado'], ['ocupada', 'Ocupada'], ['reservada', 'Reservada'], ['libre', 'Libre']]}/>} />
-          <FormWrapper children={<Select handleChange={e => setOrientacion(e.target.value)} options={[['', 'Orientacion'], ['norte', 'Norte'], ['sur', 'Sur'], ['este', 'Este'], ['oeste', 'Oeste']]} />} />
-          <div className="min-w-full text-center mb-8">
-            <label className="mt-3 text-xl text-secondary">Estado Inventario</label>
-            <MultiRangeSlider min={minVal} max={maxVal} onChange={({ min, max }: { min: number; max: number }) => { 
-              minVal = min; 
-              maxVal = max;
-            }}/>
-          </div>
-          <FormWrapper children={<FloatingLabelInput placeholder="capacidad" type='text' onChange={setCapacity} />} />
-          <div className="min-w-full">
-            <button onClick={handleFilterSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
-              Filtrar
-            </button>
-          </div>
-          <div className="my-3 text-center">
-            <label className="text-3xl text-secondary text-bold">Agregar Habitacion</label>
-          </div>
-          <FormWrapper children={<FloatingLabelInput placeholder="Codigo" type='text' onChange={setNewCodigo} />} />
-          <FormWrapper children={<FloatingLabelInput placeholder="Capacidad" type='text' onChange={setNewCapacity} />} />
-          <FormWrapper children={<Select handleChange={e => setNewOrientacion(e.target.value)} options={[['', 'Orientacion'], ['norte', 'Norte'], ['sur', 'Sur'], ['este', 'Este'], ['oeste', 'Oeste']]}/>} />
-          <div className="mb-3 min-w-full">
-            <button onClick={handleCreationSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
-              Agregar
-            </button>
-          </div>
-          {show ?
-            <div className="my-3 min-w-full rounded-md border border-red text-red p-2">
-              <p>{err}</p>
-            </div> : null
-          }
-        </div>
+      <FormWrapper children={<FloatingLabelInput placeholder="capacidad" type='text' onChange={setCapacity} />} />
+      <div className="min-w-full">
+        <button onClick={handleFilterSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
+          Filtrar
+        </button>
       </div>
-    </div>
+      <div className="my-3 text-center">
+        <label className="text-3xl text-secondary text-bold">Agregar Habitacion</label>
+      </div>
+      <FormWrapper children={<FloatingLabelInput placeholder="Codigo" type='text' onChange={setNewCodigo} />} />
+      <FormWrapper children={<FloatingLabelInput placeholder="Capacidad" type='text' onChange={setNewCapacity} />} />
+      <FormWrapper children={<Select handleChange={e => setNewOrientacion(e.target.value)} options={[['', 'Orientacion'], ['norte', 'Norte'], ['sur', 'Sur'], ['este', 'Este'], ['oeste', 'Oeste']]}/>} />
+      <div className="mb-3 min-w-full">
+        <button onClick={handleCreationSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
+          Agregar
+        </button>
+      </div>
+      <ErrorAlert show={show} message={err} />
+    </LayaoutWrapper>
   )
 }

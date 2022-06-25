@@ -31,6 +31,12 @@ def handleRoomRequest():
     rooms = roomHandler.listAllRooms()
     return make_response(jsonify({'rooms': rooms}), 200)
 
+@app.route("/users", methods=["GET"])
+@login_required
+def listUsers():
+    users = userHandler.listUsers()
+    return make_response(jsonify({'users': users}), 200)
+
 @app.route("/clients", methods=["GET", "POST"])
 @login_required
 def handleClientsRequests():

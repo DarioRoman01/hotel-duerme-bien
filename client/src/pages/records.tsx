@@ -6,7 +6,7 @@ import { DatePicker } from "../components/datePickers";
 import { FloatingLabelInput } from "../components/floatingLabel";
 import { checkValues } from "./utils";
 import { Select } from "../components/select";
-import { FormWrapper } from "../components/wrappers";
+import { FormWrapper, LayaoutWrapper } from "../components/wrappers";
 
 export const Records: React.FC = () => {
   const [startDate, setStartDate] = useState('');
@@ -50,33 +50,23 @@ export const Records: React.FC = () => {
       </tr>
     )))
   }
-
+  
   return (
-    <div className="grid grid-cols-12 grid-rows-12 min-w-full">
-      <div className="bg-contrast row-span-3 col-span-12 h-16">
-        <Navbar />
+    <LayaoutWrapper customTable={<Table columns={["codigo", "codigo habitacion", "activa", "fehca inicio", "fecha termino", "clientes"]} rows={rows} />}>
+      <div className="mb-3 text-center">
+        <label className="text-3xl text-secondary text-bold">Filtros</label>
       </div>
-      <div className="flex justify-center min-h-fit sm:min-h-screen col-span-12 row-span-5 sm:col-span-9 sm:row-span-9">
-        <Table columns={["codigo", "codigo habitacion", "activa", "fehca inicio", "fecha termino", "clientes"]} rows={rows} />
-      </div>
-      <div className="bg-contrast col-span-12 row-span-4 sm:col-span-3 sm:row-span-9 min-h-screen p-3">
-        <div className="flex flex-col justify-center items-center p-5">
-          <div className="mb-3 text-center">
-            <label className="text-3xl text-secondary text-bold">Filtros</label>
-          </div>
 
-          <FormWrapper children={<Select handleChange={e => setState(e.target.value)} options={[['', 'Estado'], ['1', 'Activa'], ['0', 'No activa']]} />} />
-          <FormWrapper children={<DatePicker onChange={setStartDate} label="Fecha inicio" />} />
-          <FormWrapper children={<DatePicker onChange={setFinishDate} label="Fecha termino" />} />
-          <FormWrapper children={<FloatingLabelInput onChange={setRoom} placeholder="Habitacion" type="text"/>} />
-          
-          <div className="min-w-full">
-            <button onClick={handleSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
-              Filtrar
-            </button>
-          </div>
-        </div>
+      <FormWrapper children={<Select handleChange={e => setState(e.target.value)} options={[['', 'Estado'], ['1', 'Activa'], ['0', 'No activa']]} />} />
+      <FormWrapper children={<DatePicker onChange={setStartDate} label="Fecha inicio" />} />
+      <FormWrapper children={<DatePicker onChange={setFinishDate} label="Fecha termino" />} />
+      <FormWrapper children={<FloatingLabelInput onChange={setRoom} placeholder="Habitacion" type="text"/>} />
+      
+      <div className="min-w-full">
+        <button onClick={handleSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
+          Filtrar
+        </button>
       </div>
-    </div>
+    </LayaoutWrapper>
   )
 }

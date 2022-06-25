@@ -6,6 +6,7 @@ import { Home } from './pages/home';
 import { Clients } from './pages/clients'
 import { Records } from './pages/records'
 import { Objects } from './pages/objects'
+import { Users } from './pages/users';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path='/clients' element={<Clients/>}/>
         <Route path='/records' element={<Records />}/>
         <Route path='/objects' element={<Objects />}/>
+        <Route path='/users' element={<Users />} />
       </Routes>
     </div>
   );

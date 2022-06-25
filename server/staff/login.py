@@ -34,10 +34,10 @@ class StaffHandler:
         """, (username, hashPassword, userType))
         self.__db.commit()
 
-    def listUsers(self) -> List[User]:
+    def listUsers(self) -> List[Dict[str, str]]:
         """Lista a todos los usuarios registrados dentro de la aplicacion"""
-        self.__db.queryDB("SELECT codigo, username, password, type from usuarios;")
-        return [User(u[0], u[1], u[2], u[3]) for u in self.__db.fetchAll()]
+        self.__db.queryDB("SELECT codigo, username, password, type from usuario")
+        return [User(u[0], u[1], u[2], u[3]).toDict() for u in self.__db.fetchAll()]
 
     def modifyUser(self, username, newUsername, pwd):
         """se encarga de la modificacion de los usuarios solo se permitira cambiar su nombre de usuario y contraseña"""

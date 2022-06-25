@@ -57,6 +57,16 @@ export type RoomObjectsResponse = {
   objects: RoomObject[]
 }
 
+export type User = {
+  codigo: number,
+  type: string,
+  username: string
+}
+
+export type UsersResponse = {
+  users: User[]
+}
+
 const headers = {
   Accept: "application/json",
   "Content-Type": "application/json",

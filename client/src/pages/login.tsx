@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { FloatingLabelInput } from "../components/floatingLabel";
 import { useNavigate } from "react-router-dom";
-import { postRequest } from "../requests/requests";
+import { postRequest, User } from "../requests/requests";
+import { ErrorAlert } from "../components/error";
 
 export const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -11,7 +12,7 @@ export const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSubmit = () => {
-    postRequest<any>({username: username, password: pwd}, 'login')
+    postRequest<User>({username: username, password: pwd}, 'login')
     .then(_ => navigate('/home'))
     .catch(err=> {
       setFailMessage(err.message);
@@ -34,7 +35,7 @@ export const Login: React.FC = () => {
         <button onClick={_ => handleSubmit()} className="bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Ingresar
         </button>
-        {fail ? (<p className="text-center text-2xl text-secondary">{failMessage}</p>) : null}
+        <ErrorAlert show={fail} message={failMessage} />
       </div>
     </div>
   )
