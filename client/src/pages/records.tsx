@@ -5,6 +5,8 @@ import { getRequest, RecordsResponse, postRequest } from "../requests/requests";
 import { DatePicker } from "../components/datePickers";
 import { FloatingLabelInput } from "../components/floatingLabel";
 import { checkValues } from "./utils";
+import { Select } from "../components/select";
+import { FormWrapper } from "../components/wrappers";
 
 export const Records: React.FC = () => {
   const [startDate, setStartDate] = useState('');
@@ -62,22 +64,12 @@ export const Records: React.FC = () => {
           <div className="mb-3 text-center">
             <label className="text-3xl text-secondary text-bold">Filtros</label>
           </div>
-          <div className="mb-3 min-w-full">
-            <select value={state} onChange={e => setState(e.target.value)} className="form-select appearance-none block w-full px-3 py-1.5 text-base font-normal text-secondary bg-contrast bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:border-blue-600 focus:outline-none" aria-label="Default select example">
-                <option value=''>Estado</option>
-                <option value="1">Activa</option>
-                <option value="0">no activa</option>
-            </select>
-          </div>
-          <div className="mb-3 min-w-full">
-            <DatePicker onChange={setStartDate} label="Fecha inicio" />
-          </div>
-          <div className="mb-3 min-w-full">
-            <DatePicker onChange={setFinishDate} label="Fecha termino" />
-          </div>
-          <div className="mb-3 min-w-full">
-            <FloatingLabelInput onChange={setRoom} placeholder="Habitacion" type="text"/>
-          </div>
+
+          <FormWrapper children={<Select handleChange={e => setState(e.target.value)} options={[['', 'Estado'], ['1', 'Activa'], ['0', 'No activa']]} />} />
+          <FormWrapper children={<DatePicker onChange={setStartDate} label="Fecha inicio" />} />
+          <FormWrapper children={<DatePicker onChange={setFinishDate} label="Fecha termino" />} />
+          <FormWrapper children={<FloatingLabelInput onChange={setRoom} placeholder="Habitacion" type="text"/>} />
+          
           <div className="min-w-full">
             <button onClick={handleSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
               Filtrar

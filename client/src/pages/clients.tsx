@@ -1,9 +1,11 @@
-import React, {useState, useEffect, useRef } from "react";
+import React, {useState, useEffect } from "react";
 import { getRequest, CilentResponse, postRequest } from "../requests/requests";
 import { Table } from "../components/table";
 import { Navbar } from "../components/navbar";
 import { FloatingLabelInput } from "../components/floatingLabel";
 import { checkValues } from "./utils";
+import { Select } from "../components/select";
+import { FormWrapper } from "../components/wrappers";
 
 export const Clients: React.FC = () => {
   const [rows, setRows] = useState([] as JSX.Element[])
@@ -81,19 +83,9 @@ export const Clients: React.FC = () => {
           <div className="mb-3 text-center">
             <label className="text-3xl text-secondary text-bold">Filtros</label>
           </div>
-          <div className="mb-3 min-w-full">
-            <select value={tipo} onChange={e => setTipo(e.target.value)} className="form-select appearance-none block w-full px-3 py-1.5 text-base font-normal text-secondary bg-contrast bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:border-blue-600 focus:outline-none" aria-label="Default select example">
-                <option value=''>Tipo Cliente</option>
-                <option value="pasajero responsable">Pasajero Responsable</option>
-                <option value="acompañante">Acompañante</option>
-            </select>
-          </div>
-          <div className="mb-3 min-w-full">
-              <FloatingLabelInput placeholder="Nombre" type='text' onChange={setName} />
-          </div>
-          <div className="mb-3 min-w-full">
-              <FloatingLabelInput placeholder="Habitacion" type='text' onChange={setRoomId} />
-          </div>
+          <FormWrapper children={<Select handleChange={e => setTipo(e.target.value)} options={[['', 'Tipo Cliente'], ['pasajero responsable', 'Pasajero responsable'], ['acompañante', 'Acompañante']]}/>} />
+          <FormWrapper children={<FloatingLabelInput placeholder="Nombre" type='text' onChange={setName} />} />
+          <FormWrapper children={<FloatingLabelInput placeholder="Habitacion" type='text' onChange={setRoomId} />} />
           <div className="mb-3 min-w-full">
             <button onClick={handleFilterSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
               Filtrar
@@ -102,12 +94,8 @@ export const Clients: React.FC = () => {
           <div className="my-3 text-center">
             <label className="text-3xl text-secondary text-bold">Agregar Cliente</label>
           </div>
-          <div className="mb-3 min-w-full">
-              <FloatingLabelInput placeholder="Nombre" type='text' onChange={setNewName} />
-          </div>
-          <div className="mb-3 min-w-full">
-              <FloatingLabelInput placeholder="Rut" type='text' onChange={setNewRut} />
-          </div>
+          <FormWrapper children={<FloatingLabelInput placeholder="Nombre" type='text' onChange={setNewName} />} />
+          <FormWrapper children={<FloatingLabelInput placeholder="Rut" type='text' onChange={setNewRut} />} />
           <div className="mb-3 min-w-full">
             <button onClick={handleCreationSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
               Agregar
