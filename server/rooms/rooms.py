@@ -82,7 +82,7 @@ class RoomHandler:
     def filterRooms(self, filters: Dict):
         query = """
         SELECT h.codigo, h.capacidad, h.orientacion, h.estado, AVG(oh.estado) as 'estado_i' FROM habitacion as h
-        INNER JOIN objeto_habitacion AS oh ON oh.codigo_habitacion = h.codigo
+        LEFT JOIN objeto_habitacion AS oh ON oh.codigo_habitacion = h.codigo
         WHERE eliminada = false
         """        
 
@@ -106,8 +106,9 @@ class RoomHandler:
             else:
                 query += f" HAVING estado_i <= {filters['max']}"
 
+        print(query)
         self.__db.queryDB(query)
-        return [Room(r[0], r[1], r[2], r[3], round(r[4], 1)).toDict() for r in self.__db.fetchAll()]
+        return [Room(r[0], r[1], r[2], r[3], r[4]).toDict() for r in self.__db.fetchAll()]
 
     def getRoomDetail(self, roomId):
         if not self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (roomId, )):
@@ -133,6 +134,48 @@ class RoomHandler:
     def listAllObjects(self):
         self.__db.queryDB("SELECT * FROM objeto_habitacion")
         return [RoomObject(obj[0], obj[1], obj[2], obj[3]).toDict() for obj in self.__db.fetchAll()]
+
+    def filterObjects(self, filters: dict):
+        query = "SELECT * FROM objeto_habitacion"
+        first = False
+
+        if filters.get('room') != None:
+            first = True
+            query += f" WHERE codigo_habitacion = '{filters.get('room')}'"
+
+        if filters.get('type') != None:
+            if first:
+                query += f" AND tipo = '{filters.get('type')}'"
+            else:
+                first = True
+                query += f" WHERE tipo = '{filters.get('type')}'"
+
+        if filters.get("max") != None or filters.get("min") != None:
+            if filters.get("max") != None and filters.get("min") != None:
+                if first:
+                    query += f" AND estado BETWEEN {filters['min']} AND {filters['max']}"
+                else:
+                    first = True
+                    query += f" WHERE estado BETWEEN {filters['min']} AND {filters['max']}"
+            
+            elif filters.get("min"):
+                if first:
+                    query += f" AND estado >= {filters['min']}"
+                else:
+                    first = True
+                    query += f" WHERE estado >= {filters['min']}"
+
+            else:
+                if first:
+                    query += f" AND estado <= {filters['max']}"
+                else:
+                    first = True
+                    query += f" WHERE estado <= {filters['max']}"
+
+        self.__db.queryDB(query)
+        return [RoomObject(obj[0], obj[1], obj[2], obj[3]).toDict() for obj in self.__db.fetchAll()]
+
+
 
     def deleteRoom(self, roomId):
         habitacion = self.__db.queryDB("SELECT * FROM habitaicon WHERE codigo = %s", (roomId, ))

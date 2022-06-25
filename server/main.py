@@ -80,9 +80,14 @@ def handleRecordsRequests():
         historys = roomHandler.getRoomsHistory()
         return make_response(jsonify({'records': historys}), 200)
 
-@app.route("/objects", methods=["GET"])
+@app.route("/objects", methods=["GET", "POST"])
 @login_required
 def handleObjsRequests():
+    if request.method == "POST":
+        filters = request.get_json()
+        objs = roomHandler.filterObjects(filters)
+        return make_response(jsonify({'objects': objs}), 200)
+
     objs = roomHandler.listAllObjects()
     return make_response(jsonify({'objects': objs}), 200)
 
