@@ -77,8 +77,8 @@ export const Clients: React.FC = () => {
         <label className="text-3xl text-secondary text-bold">Filtros</label>
       </div>
       <FormWrapper children={<Select handleChange={e => setTipo(e.target.value)} options={[['', 'Tipo Cliente'], ['pasajero responsable', 'Pasajero responsable'], ['acompañante', 'Acompañante']]}/>} />
-      <FormWrapper children={<FloatingLabelInput placeholder="Nombre" type='text' onChange={setName} />} />
-      <FormWrapper children={<FloatingLabelInput placeholder="Habitacion" type='text' onChange={setRoomId} />} />
+      <FormWrapper children={<FloatingLabelInput placeholder="Nombre" type='text' onChange={e => setName(e.currentTarget.value)} />} />
+      <FormWrapper children={<FloatingLabelInput placeholder="Habitacion" type='text' onChange={e => setRoomId(e.currentTarget.value)} />} />
       <div className="mb-3 min-w-full">
         <button onClick={handleFilterSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Filtrar
@@ -87,8 +87,8 @@ export const Clients: React.FC = () => {
       <div className="my-3 text-center">
         <label className="text-3xl text-secondary text-bold">Agregar Cliente</label>
       </div>
-      <FormWrapper children={<FloatingLabelInput placeholder="Nombre" type='text' onChange={setNewName} />} />
-      <FormWrapper children={<FloatingLabelInput placeholder="Rut" type='text' onChange={setNewRut} />} />
+      <FormWrapper children={<FloatingLabelInput placeholder="Nombre" type='text' onChange={e => setNewName(e.currentTarget.value)} />} />
+      <FormWrapper children={<FloatingLabelInput placeholder="Rut" type='text' onChange={e => setNewRut(e.currentTarget.value)} />} />
       <div className="mb-3 min-w-full">
         <button onClick={handleCreationSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Agregar

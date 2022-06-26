@@ -27,10 +27,10 @@ export const Login: React.FC = () => {
           <label className="text-2xl text-secondary">Login</label>
         </div>
         <div>
-          <FloatingLabelInput onChange={setUsername} placeholder="usuario" type="text" />
+          <FloatingLabelInput onChange={e => setUsername(e.currentTarget.value)} placeholder="usuario" type="text" />
         </div>
         <div>
-          <FloatingLabelInput onChange={setPwd} placeholder="contraseña" type="password" />
+          <FloatingLabelInput onChange={e => setPwd(e.currentTarget.value)} placeholder="contraseña" type="password" />
         </div>
         <button onClick={_ => handleSubmit()} className="bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Ingresar

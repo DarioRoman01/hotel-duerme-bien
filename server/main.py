@@ -47,7 +47,6 @@ def createUser():
     except AlreadyExistsError as err:
         return make_response(jsonify({'error': str(err)}), 400) 
     except BaseException as err:
-        print(err)
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
 @app.route("/clients", methods=["GET", "POST"])

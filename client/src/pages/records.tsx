@@ -7,6 +7,7 @@ import { FloatingLabelInput } from "../components/floatingLabel";
 import { checkValues } from "./utils";
 import { Select } from "../components/select";
 import { FormWrapper, LayaoutWrapper } from "../components/wrappers";
+import { InputsList } from "../components/inputList";
 
 export const Records: React.FC = () => {
   const [startDate, setStartDate] = useState('');
@@ -14,6 +15,7 @@ export const Records: React.FC = () => {
   const [room, setRoom] = useState('');
   const [state, setState] = useState('');
   const [rows, setRows] = useState([] as JSX.Element[]);
+  const [companions, setCompanions] = useState([] as string[])
 
   useEffect(() => {
     getRequest<RecordsResponse>("/records")
@@ -22,10 +24,6 @@ export const Records: React.FC = () => {
   }, [])
 
   const handleSubmit = () => {
-    // we dont have any filter to apply
-    if (!checkValues(startDate) && !checkValues(finishDate) && !checkValues(room) && !checkValues(state)) return
-    
-    // we have filters to apply
     const filters = {
       start: checkValues(startDate),
       finish: checkValues(finishDate),
@@ -36,6 +34,10 @@ export const Records: React.FC = () => {
     postRequest<RecordsResponse>(filters, 'records')
     .then(r => callSetRows(r))
     .catch(err => console.log(err))
+  }
+
+  const handleCreationSubmit = () => {
+    console.log(companions)
   }
 
   const callSetRows = (r: RecordsResponse) => {
@@ -60,11 +62,20 @@ export const Records: React.FC = () => {
       <FormWrapper children={<Select handleChange={e => setState(e.target.value)} options={[['', 'Estado'], ['1', 'Activa'], ['0', 'No activa']]} />} />
       <FormWrapper children={<DatePicker onChange={setStartDate} label="Fecha inicio" />} />
       <FormWrapper children={<DatePicker onChange={setFinishDate} label="Fecha termino" />} />
-      <FormWrapper children={<FloatingLabelInput onChange={setRoom} placeholder="Habitacion" type="text"/>} />
+      <FormWrapper children={<FloatingLabelInput onChange={e => setRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
       
       <div className="min-w-full">
         <button onClick={handleSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Filtrar
+        </button>
+      </div>
+      <div className="my-3 text-center">
+        <label className="text-3xl text-secondary text-bold">Agregar Registro</label>
+      </div>
+      <InputsList onChange={setCompanions}/>
+      <div className="min-w-full">
+        <button onClick={handleCreationSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
+          Agregar
         </button>
       </div>
     </LayaoutWrapper>

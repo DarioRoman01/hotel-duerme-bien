@@ -114,7 +114,7 @@ export const Rooms: React.FC = () => {
           maxVal = max;
         }}/>
       </div>
-      <FormWrapper children={<FloatingLabelInput placeholder="capacidad" type='text' onChange={setCapacity} />} />
+      <FormWrapper children={<FloatingLabelInput placeholder="capacidad" type='text' onChange={e => setCapacity(e.currentTarget.value)} />} />
       <div className="min-w-full">
         <button onClick={handleFilterSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Filtrar
@@ -123,8 +123,8 @@ export const Rooms: React.FC = () => {
       <div className="my-3 text-center">
         <label className="text-3xl text-secondary text-bold">Agregar Habitacion</label>
       </div>
-      <FormWrapper children={<FloatingLabelInput placeholder="Codigo" type='text' onChange={setNewCodigo} />} />
-      <FormWrapper children={<FloatingLabelInput placeholder="Capacidad" type='text' onChange={setNewCapacity} />} />
+      <FormWrapper children={<FloatingLabelInput placeholder="Codigo" type='text' onChange={e => setNewCodigo(e.currentTarget.value)} />} />
+      <FormWrapper children={<FloatingLabelInput placeholder="Capacidad" type='text' onChange={e => setNewCapacity(e.currentTarget.value)} />} />
       <FormWrapper children={<Select handleChange={e => setNewOrientacion(e.target.value)} options={[['', 'Orientacion'], ['norte', 'Norte'], ['sur', 'Sur'], ['este', 'Este'], ['oeste', 'Oeste']]}/>} />
       <div className="mb-3 min-w-full">
         <button onClick={handleCreationSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
