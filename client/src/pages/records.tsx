@@ -8,20 +8,33 @@ import { checkValues } from "./utils";
 import { Select } from "../components/select";
 import { FormWrapper, LayaoutWrapper } from "../components/wrappers";
 import { InputsList } from "../components/inputList";
+import { ErrorAlert } from "../components/error";
 
 export const Records: React.FC = () => {
+  const [rows, setRows] = useState([] as JSX.Element[]);
+  const [creation, setCreation] = useState(false);
+  const [err, setErr] = useState('')
+  const [show, setShow] = useState(false);
+
+
+  // filters inputs state
   const [startDate, setStartDate] = useState('');
   const [finishDate, setFinishDate] = useState('');
   const [room, setRoom] = useState('');
   const [state, setState] = useState('');
-  const [rows, setRows] = useState([] as JSX.Element[]);
+
+  // creation inputs state
+  const [newStartDate, setNewStartDate] = useState('');
+  const [newFinishDate, setNewFinishDate] = useState('');
+  const [newRoom, setNewRoom] = useState('');
+  const [newResponsable, setNewResponsable] = useState('');
   const [companions, setCompanions] = useState([] as string[])
 
   useEffect(() => {
     getRequest<RecordsResponse>("/records")
     .then(r => callSetRows(r))
     .catch(err => console.log(err))
-  }, [])
+  }, [creation])
 
   const handleSubmit = () => {
     const filters = {
@@ -37,7 +50,28 @@ export const Records: React.FC = () => {
   }
 
   const handleCreationSubmit = () => {
-    console.log(companions)
+    if (!checkValues(newResponsable) || !checkValues(newRoom) || !checkValues(newFinishDate)) {
+      setErr('los campos responsable, fecha termino y habitacion son obligatorios');
+      setShow(true)
+      return
+    }
+
+    setShow(false)
+    const body = {
+      responsable: newResponsable,
+      room: newRoom,
+      start: newStartDate,
+      finish: newFinishDate,
+      companions: companions
+    }
+
+    postRequest<any>(body, 'records/create')
+    .then(_ => setCreation(!creation))
+    .catch(err => {
+      setErr(err.message);
+      setShow(true);
+    })
+    console.log(body)
   }
 
   const callSetRows = (r: RecordsResponse) => {
@@ -60,8 +94,8 @@ export const Records: React.FC = () => {
       </div>
 
       <FormWrapper children={<Select handleChange={e => setState(e.target.value)} options={[['', 'Estado'], ['1', 'Activa'], ['0', 'No activa']]} />} />
-      <FormWrapper children={<DatePicker onChange={setStartDate} label="Fecha inicio" />} />
-      <FormWrapper children={<DatePicker onChange={setFinishDate} label="Fecha termino" />} />
+      <FormWrapper children={<DatePicker type="date" onChange={e => setStartDate(e.target.value)} label="Fecha inicio" />} />
+      <FormWrapper children={<DatePicker type="date" onChange={e => setFinishDate(e.target.value)} label="Fecha termino" />} />
       <FormWrapper children={<FloatingLabelInput onChange={e => setRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
       
       <div className="min-w-full">
@@ -72,12 +106,17 @@ export const Records: React.FC = () => {
       <div className="my-3 text-center">
         <label className="text-3xl text-secondary text-bold">Agregar Registro</label>
       </div>
+      <FormWrapper children={<FloatingLabelInput onChange={e => setNewRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
+      <FormWrapper children={<FloatingLabelInput onChange={e => setNewResponsable(e.currentTarget.value)} placeholder="Responsable" type="text"/>} />
+      <FormWrapper children={<DatePicker type="datetime-local" onChange={e => setNewStartDate(e.target.value.replace('T', ' '))} label="Fecha inicio" />} />
+      <FormWrapper children={<DatePicker type="datetime-local" onChange={e => setNewFinishDate(e.target.value.replace('T', ' '))} label="Fecha termino" />} />
       <InputsList onChange={setCompanions}/>
       <div className="min-w-full">
         <button onClick={handleCreationSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Agregar
         </button>
       </div>
+      <ErrorAlert message={err} show={show} />
     </LayaoutWrapper>
   )
 }
