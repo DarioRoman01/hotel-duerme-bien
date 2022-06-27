@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
 from db import DB
+from server.utils.utils import NotCompatibleError
 from staff import StaffHandler
 from rooms import RoomHandler
 from clients import ClientsHandler
@@ -109,6 +110,24 @@ def handleRecordsRequests():
     else:
         historys = roomHandler.getRoomsHistory()
         return make_response(jsonify({'records': historys}), 200)
+
+
+@app.route("/records/create", methods=["POST"])
+@login_required
+def createRecord():
+    try:
+        data = request.get_json()
+        clientsHandler.asingRoom(data.get('room'), data.get('companions'), data.get('start'), data.get('finish'), data.get('responsable'))
+        return make_response(jsonify({'ok': 'ok'}))
+
+    except NotCompatibleError as err:
+        return make_response(jsonify({'error': str(err)}), 400)
+
+    except NotFoundError as err:
+        return make_response(jsonify({'error': str(err)}), 404)
+
+    except:
+        return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
 @app.route("/objects", methods=["GET", "POST"])
 @login_required

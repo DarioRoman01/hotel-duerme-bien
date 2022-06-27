@@ -46,7 +46,7 @@ class ClientsHandler:
         self.__db.queryDB("INSERT INTO cliente (rut, nombre, reputacion) VALUES (%s, %s, 100)", (rut, nombre))
         self.__db.commit()
 
-    def asingRoom(self, codigo_habitacion: int,acompanantes: list[str], fecha_termino: str, responsable: str):
+    def asingRoom(self, codigo_habitacion: int, acompanantes: list[str], start: str,  finish: str, responsable: str):
         if not self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (codigo_habitacion,)):
             raise NotFoundError(f"No se encontro una habitacion con el codigo {codigo_habitacion}")
 
@@ -61,12 +61,16 @@ class ClientsHandler:
             if not self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (acompanante,), ):
                 raise NotFoundError(f"No se encontro un cliente con rut {acompanante}")
 
-        now = datetime.now()
-        fecha_asignacion = now.strftime("%d/%m/%Y %H:%M:%S")
+        if not start:
+            now = datetime.now()
+            fecha_asignacion = now.strftime("%d/%m/%Y %H:%M:%S")
+        else:
+            fecha_asignacion = start
+
         result = self.__db.queryDB("""
             INSERT INTO historial_habitacion (codigo_habitacion, activa, fecha_asignacion, fecha_termino)
             VALUES(%s, true, %s, %s);
-        """, (codigo_habitacion, fecha_asignacion, fecha_termino))
+        """, (codigo_habitacion, fecha_asignacion, finish))
         
         historial =  result.fetchone()
         res = self.__db.queryDB("INSERT INTO cliente_historial (rut_cliente, codigo_historial, responsable) VALUES (%s, %s, true)", (responsable, historial[0]))
