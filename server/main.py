@@ -1,11 +1,10 @@
 from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
 from db import DB
-from server.utils.utils import NotCompatibleError
 from staff import StaffHandler
 from rooms import RoomHandler
 from clients import ClientsHandler
-from utils import login_required, NotFoundError, AlreadyExistsError
+from utils import login_required, NotFoundError, AlreadyExistsError, NotCompatibleError
 
 app = Flask(__name__)
 CORS(app, origins="http://localhost:3000", supports_credentials=True)
@@ -21,13 +20,25 @@ def login():
     response.set_cookie('currentUserType', user.type)
     return response
 
-@app.route("/rooms", methods=["GET", "POST"])
+@app.route("/rooms", methods=["GET", "POST", "PATCH"])
 @login_required
 def handleRoomRequest():
     if request.method == "POST":
         content = request.get_json()
         rooms = roomHandler.filterRooms(content)
         return make_response(jsonify({'rooms': rooms}), 200)
+
+    elif request.method == "PATCH":
+        try:
+            data = request.get_json()
+            roomHandler.updateRoom(data.get("room"), data.get('capacity'), data.get('orientation'))
+            return make_response(jsonify({'ok': 'ok'}), 200)
+
+        except NotFoundError as err:
+            return make_response(jsonify({'error': str(err)}), 404)
+
+        # except:
+        #     return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
         
     rooms = roomHandler.listAllRooms()
     return make_response(jsonify({'rooms': rooms}), 200)
@@ -117,6 +128,7 @@ def handleRecordsRequests():
 def createRecord():
     try:
         data = request.get_json()
+        print(data.get('companions'))
         clientsHandler.asingRoom(data.get('room'), data.get('companions'), data.get('start'), data.get('finish'), data.get('responsable'))
         return make_response(jsonify({'ok': 'ok'}))
 
@@ -126,8 +138,8 @@ def createRecord():
     except NotFoundError as err:
         return make_response(jsonify({'error': str(err)}), 404)
 
-    except:
-        return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
+    # except:
+    #     return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
 @app.route("/objects", methods=["GET", "POST"])
 @login_required

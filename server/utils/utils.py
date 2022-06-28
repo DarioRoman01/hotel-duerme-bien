@@ -11,7 +11,10 @@ class NotCreatedErorr(Exception):
     """Error custom en caso de que la creacion de un objeto en la base de datos no haya sido creado"""
 
 class NotCompatibleError(Exception):
-    """Error custom en caso de que la cantidad de acompanantes sea mayor a la capacidad de la habitacion"""
+    """
+    Error custom en caso de que la creacion de un registro no pueda ser cumplida por errores de compatibilidad
+    como clientes que sobrepasan la capacidad de una habitacion o la habitacion ya esta siendo usada
+    """
 
 def login_required(f):
     @wraps(f)

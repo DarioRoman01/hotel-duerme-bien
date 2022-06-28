@@ -193,6 +193,13 @@ class RoomHandler:
         self.__db.commit()
         return "La habitacion se ha eliminada correctamente"
 
+    def updateRoom(self, room, newCapacity, newOrientation):
+        if not self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (room, )):
+            raise NotFoundError(f'No se ha encontrado una habitacion con el codigo {room}')
+        
+        self.__db.queryDB("UPDATE habitacion SET orientacion = %s, capacidad = %s WHERE codigo = %s", (newOrientation, newCapacity, room))
+        self.__db.commit()
+
         
 class Room:
     def __init__(self, codigo, capacidad, orientacion, estado, estad_i) -> None:

@@ -115,8 +115,7 @@ class DB:
 
     def checkExistanse(self, query, args):
         self.queryDB(query, args)
-        obj = self.fetchOne()
-        return False if obj is None else True
+        return self.fetchOne()
 
     def checkCreation(self, result):
         if not result.with_rows:
@@ -125,6 +124,9 @@ class DB:
     def commit(self):
         """realiza el commmit para que los cambios se vean reflejados en la base de datos"""
         self.__conn.commit()
+
+    def getLastInsertedId(self):
+        return self.__cursor.lastrowid
 
     def queryDB(self, query: str, args: tuple=None):
         """queryDB es la funcion encargada de ejecutar los querys enviados por otras clases o funciones que lo requieran"""
