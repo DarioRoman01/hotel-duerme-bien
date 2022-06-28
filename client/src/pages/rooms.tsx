@@ -18,6 +18,7 @@ export const Rooms: React.FC = () => {
   const [creation, setCreation] = useState(false);
   const [err, setErr] = useState('')
   const [show, setShow] = useState(false);
+  const [action, setAction] = useState('');
 
   // filters inputs state
   let minVal = 1;
@@ -74,11 +75,13 @@ export const Rooms: React.FC = () => {
     })
   }
 
-
-  const showModal = (r: Room) => {
+  const handleActionClick = (r: Room, action: string) => {
+    setAction(action)
     setRoom(r)
     setVisible(true)
   }
+
+  const handleUpdate = () => setCreation(!creation);
 
   const callSetRows = (r: RoomsResponse) => {
     setRows(r.rooms.map(room => (
@@ -89,17 +92,19 @@ export const Rooms: React.FC = () => {
         <td className="p-3 text-center">{room.estado}</td>
         <td className="p-3 text-center">{room.estado_i}</td>
         <td className="p-3 flex mt-1 justify-center">
-          <button onClick={() => showModal(room)} className="mr-2"><Icon icon='fa-solid:eye'/></button>
-          <button className="mx-2"><Icon icon='fa6-solid:pen-clip'/></button>
-          <button className="ml-2"><Icon icon='bi:trash-fill'/></button>
+          <button onClick={() => handleActionClick(room, 'detail')} className="mr-2"><Icon icon='fa-solid:eye'/></button>
+          <button onClick={() => handleActionClick(room, 'update')} className="mx-2"><Icon icon='fa6-solid:pen-clip'/></button>
+          <button onClick={() => handleActionClick(room, 'delete')} className="ml-2"><Icon icon='bi:trash-fill'/></button>
         </td>
       </tr>
     )))
   }
 
+
+
   return (
     <LayaoutWrapper 
-      modal={<RoomModal handleClose={() => setVisible(false)} room={room} visible={visible} />} 
+      modal={<RoomModal onUpdate={handleUpdate} handleClose={() => setVisible(false)} room={room} visible={visible} action={action} />} 
       customTable={<Table columns={["codigo", "capacidad", "orientacion", "estado", "estado inmueble", "acciones"]} rows={rows} />}
     >
       <div className="mb-3 text-center">

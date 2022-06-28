@@ -101,3 +101,19 @@ export async function getRequest<T>(endpoint: string): Promise<T> {
   }
   return await response.json();
 }
+
+export async function patchRequest<T>(body: object, endpoint: string): Promise<T>  {
+  const res = await fetch(`http://localhost:5000/${endpoint}`, {
+    method: "patch",
+    body: JSON.stringify(body),
+    headers: headers,
+    credentials: 'include'
+  })
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err['error'])
+  }
+  return await res.json();
+
+}

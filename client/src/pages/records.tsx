@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Navbar } from "../components/navbar";
+import React, { useState, useEffect } from "react";
 import { Table } from "../components/table";
 import { getRequest, RecordsResponse, postRequest } from "../requests/requests";
 import { DatePicker } from "../components/datePickers";
@@ -60,9 +59,9 @@ export const Records: React.FC = () => {
     const body = {
       responsable: newResponsable,
       room: newRoom,
-      start: newStartDate,
+      start: checkValues(newStartDate),
       finish: newFinishDate,
-      companions: companions
+      companions: companions.length === 0 || (companions.length === 1 && companions[0] === '') ? null : companions
     }
 
     postRequest<any>(body, 'records/create')
@@ -71,7 +70,6 @@ export const Records: React.FC = () => {
       setErr(err.message);
       setShow(true);
     })
-    console.log(body)
   }
 
   const callSetRows = (r: RecordsResponse) => {
