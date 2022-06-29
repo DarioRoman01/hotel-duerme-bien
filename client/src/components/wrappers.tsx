@@ -9,6 +9,14 @@ export const FormWrapper: React.FC<{children: React.ReactElement}> = (props) => 
   )
 }
 
+export const ModalItemWrapper: React.FC<{children: React.FC}> = (props) => {
+  return (
+    <div className="col-span-12 p-4 flex justify-center">
+      {<props.children />}
+    </div>
+  )
+}
+
 interface LayaoutProps {
   customTable: React.ReactElement
   children: any

@@ -117,3 +117,18 @@ export async function patchRequest<T>(body: object, endpoint: string): Promise<T
   return await res.json();
 
 }
+
+export async function deleteRequest<T>(endpoint: string): Promise<T> {
+  const res = await fetch(`http://localhost:5000/${endpoint}`, {
+    method: "delete",
+    credentials: 'include',
+    headers: headers,
+  })
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err['error'])
+  }
+
+  return await res.json();
+}
