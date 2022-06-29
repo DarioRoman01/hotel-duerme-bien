@@ -20,7 +20,7 @@ def login():
     response.set_cookie('currentUserType', user.type)
     return response
 
-@app.route("/rooms", methods=["GET", "POST", "PATCH"])
+@app.route("/rooms", methods=["GET", "POST", "PATCH", "DELETE"])
 @login_required
 def handleRoomRequest():
     if request.method == "POST":
@@ -37,8 +37,21 @@ def handleRoomRequest():
         except NotFoundError as err:
             return make_response(jsonify({'error': str(err)}), 404)
 
-        # except:
-        #     return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
+        except:
+            return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
+    
+    elif request.method == "DELETE":
+        try:
+            args = request.args.to_dict()
+            if args.get('room') == None:
+                return make_response(jsonify({'error': 'debe indicar una habitacion en los parametros de la url'}), 400)
+
+            roomHandler.deleteRoom(args.get('room'))
+            return make_response(jsonify({'ok': 'ok'}), 200)
+        except NotFoundError as err:
+            return make_response(jsonify({'error': str(err)}), 404)
+        except:
+            return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
         
     rooms = roomHandler.listAllRooms()
     return make_response(jsonify({'rooms': rooms}), 200)
