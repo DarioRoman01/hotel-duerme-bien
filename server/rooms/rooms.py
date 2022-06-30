@@ -119,7 +119,7 @@ class RoomHandler:
         detail = RoomDetail(objects)
 
         self.__db.queryDB(""" 
-        SELECT c.rut, c.nombre, c.reputacion FROM historial_habitacion
+        SELECT c.rut, c.nombre, c.reputacion, ch.responsable FROM historial_habitacion
         INNER JOIN client_historial ch on historial_habitacion.codigo = ch.codigo_historial
         INNER JOIN cliente c on ch.rut_cliente = c.rut
         WHERE codigo_habitacion = %s AND activa = TRUE;
@@ -127,7 +127,7 @@ class RoomHandler:
 
         clients = self.__db.fetchAll()
         if clients != None:
-            detail.setClients([Client(c[0], c[1], c[2]).toDict() for c in clients])
+            detail.setClients([Client(c[0], c[1], c[2], c[3]).toDict() for c in clients])
 
         return detail.toDict()
 
