@@ -19,6 +19,11 @@ export const Home: React.FC = () => {
             history
           </a>
         </div>
+        <div>
+          <a href="/users" className="bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
+            users
+          </a>
+        </div>
       </div>
     </div>
   )

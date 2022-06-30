@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Navbar } from "../components/navbar";
 import { Table } from "../components/table";
-import { getRequest, postRequest, RoomObjectsResponse } from "../requests/requests";
+import { getRequest, postRequest, RoomObject, RoomObjectsResponse } from "../requests/requests";
 import { FormWrapper, LayaoutWrapper } from "../components/wrappers";
 import { FloatingLabelInput } from "../components/floatingLabel";
 import { MultiRangeSlider } from "../components/slider";
 import { checkValues } from "./utils";
 import { ErrorAlert } from "../components/error";
+import { Icon } from "@iconify/react";
+import { ObjectModal } from "../components/objectModal";
 
 export const Objects: React.FC = () => {
   const [rows, setRows] = useState([] as JSX.Element[]);
   const [err, setErr] = useState('');
   const [show, setShow] = useState(false);
   const [creation, setCreation] = useState(false);
+  const [obj, setObj] = useState({} as RoomObject);
+  const [action, setAction] = useState("");
+  const [visible, setVisible] = useState(false);
 
   // filters input state
   let minVal = 1;
@@ -75,6 +80,12 @@ export const Objects: React.FC = () => {
 
   }
 
+  const handleActionClick = (obj: RoomObject, action: string) => {
+    setAction(action)
+    setObj(obj)
+    setVisible(true)
+  }
+
   const callSetRows = (r: RoomObjectsResponse) => {
     setRows(r.objects.map(obj => (
       <tr key={obj.codigo} className="bg-contrast text-secondary rounded-md">
@@ -82,6 +93,10 @@ export const Objects: React.FC = () => {
         <td className="p-3 text-center">{obj.habitacion}</td>
         <td className="p-3 text-center">{obj.estado}</td>
         <td className="p-3 text-center">{obj.tipo}</td>
+        <td className="p-3 flex mt-1 justify-center">
+          <button onClick={() => handleActionClick(obj, 'update')} className="mx-2"><Icon icon='fa6-solid:pen-clip'/></button>
+          <button onClick={() => handleActionClick(obj, 'delete')} className="ml-2"><Icon icon='bi:trash-fill'/></button>
+        </td>
       </tr>
     )))
   }
@@ -101,7 +116,10 @@ export const Objects: React.FC = () => {
   }
 
   return (
-    <LayaoutWrapper customTable={<Table columns={["codigo", "habitacion", "estado", "tipo"]} rows={rows} />}>
+    <LayaoutWrapper 
+      modal={<ObjectModal onUpdate={() => setCreation(!creation)} handleClose={() => setVisible(false)} object={obj} visible={visible} action={action}/>} 
+      customTable={<Table columns={["codigo", "habitacion", "estado", "tipo", "acciones"]} rows={rows} />}
+    >
       <div className="mb-3 text-center">
         <label className="text-3xl text-secondary text-bold">Filtros</label>
       </div>

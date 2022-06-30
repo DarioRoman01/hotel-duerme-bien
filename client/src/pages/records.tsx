@@ -80,13 +80,14 @@ export const Records: React.FC = () => {
         <td className="p-3 text-center">{record.activa ? "activa" : 'no activa'}</td>
         <td className="p-3 text-center">{record.fecha_asignacion}</td>
         <td className="p-3 text-center">{record.fecha_termino}</td>
-        <td className="p-3 text-center">{record.clientes.map(c => <p>{c.nombre}</p>)}</td>
+        <td className="p-3 text-center">{record.clientes.filter(c => c.responsable == 1).map(c => <p>{c.nombre}</p>)}</td>
+        <td className="p-3 text-center">{record.clientes.filter(c => c.responsable == 0).map(c => <p>{c.nombre}</p>)}</td>
       </tr>
     )))
   }
   
   return (
-    <LayaoutWrapper customTable={<Table columns={["codigo", "codigo habitacion", "activa", "fehca inicio", "fecha termino", "clientes"]} rows={rows} />}>
+    <LayaoutWrapper customTable={<Table columns={["codigo", "codigo habitacion", "activa", "fehca inicio", "fecha termino", "responsable", "acompañantes"]} rows={rows} />}>
       <div className="mb-3 text-center">
         <label className="text-3xl text-secondary text-bold">Filtros</label>
       </div>
