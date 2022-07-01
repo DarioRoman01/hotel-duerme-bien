@@ -109,6 +109,7 @@ pictures/
 .vscode/
 script.sql
 test.py
+todos.txt
 
 # mypy
 .mypy_cache/

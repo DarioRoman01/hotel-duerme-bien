@@ -1,16 +1,20 @@
 import React, {useState, useEffect } from "react";
-import { getRequest, CilentResponse, postRequest } from "../requests/requests";
+import { getRequest, CilentResponse, postRequest, Client } from "../requests/requests";
 import { Table } from "../components/table";
-import { Navbar } from "../components/navbar";
 import { FloatingLabelInput } from "../components/floatingLabel";
 import { checkValues } from "./utils";
 import { Select } from "../components/select";
 import { FormWrapper, LayaoutWrapper } from "../components/wrappers";
 import { ErrorAlert } from "../components/error";
+import { Icon } from "@iconify/react";
+import { ClientsModal } from "../components/clientsModal";
 
 export const Clients: React.FC = () => {
-  const [rows, setRows] = useState([] as JSX.Element[])
+  const [rows, setRows] = useState([] as JSX.Element[]);
   const [creation, setCreation] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [action, setAction] = useState('');
+  const [client, setClient] = useState({} as Client)
 
   // filters inputs state
   const [tipo, setTipo] = useState('');
@@ -59,6 +63,12 @@ export const Clients: React.FC = () => {
     })
   }
 
+  const handleActionClick = (c: Client, action: string) => {
+    setAction(action)
+    setClient(c)
+    setVisible(true)
+  }
+
   const callSetRows = (c: CilentResponse) => {
     setRows(c.clients.map(client => (
       <tr key={client.rut} className="bg-contrast text-secondary rounded-md">
@@ -67,12 +77,19 @@ export const Clients: React.FC = () => {
         <td className="p-3 text-center">{client.reputacion}</td>
         <td className="p-3 text-center">{client.responsable}</td>
         <td className="p-3 text-center">{client.habitacion}</td>
+        <td className="p-3 flex mt-1 justify-center">
+          <button onClick={_ => handleActionClick(client, 'update')} className="mx-2"><Icon icon='fa6-solid:pen-clip'/></button>
+          <button onClick={_ => handleActionClick(client, 'delete')} className="ml-2"><Icon icon='bi:trash-fill'/></button>
+        </td>
       </tr>
     )))
   }
 
   return (
-    <LayaoutWrapper customTable={<Table columns={["rut", "nombre", "reputacion", "tipo", "habitacion"]} rows={rows} />}>
+    <LayaoutWrapper 
+      customTable={<Table columns={["rut", "nombre", "reputacion", "tipo", "habitacion", "acciones"]} rows={rows} />}
+      modal={<ClientsModal onUpdate={() => setCreation(!creation)} handleClose={() => setVisible(false)} object={client} visible={visible} action={action} />}
+    >
       <div className="mb-3 text-center">
         <label className="text-3xl text-secondary text-bold">Filtros</label>
       </div>

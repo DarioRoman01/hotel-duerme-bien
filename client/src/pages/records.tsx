@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table } from "../components/table";
-import { getRequest, RecordsResponse, postRequest } from "../requests/requests";
+import { getRequest, RecordsResponse, postRequest, Record } from "../requests/requests";
 import { DatePicker } from "../components/datePickers";
 import { FloatingLabelInput } from "../components/floatingLabel";
 import { checkValues } from "./utils";
@@ -8,12 +8,17 @@ import { Select } from "../components/select";
 import { FormWrapper, LayaoutWrapper } from "../components/wrappers";
 import { InputsList } from "../components/inputList";
 import { ErrorAlert } from "../components/error";
+import { Icon } from "@iconify/react";
+import { RecordsModal } from "../components/recordsModal";
 
 export const Records: React.FC = () => {
   const [rows, setRows] = useState([] as JSX.Element[]);
   const [creation, setCreation] = useState(false);
   const [err, setErr] = useState('')
   const [show, setShow] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [action, setAction] = useState('');
+  const [record, setRecord] = useState({} as Record);
 
 
   // filters inputs state
@@ -72,6 +77,12 @@ export const Records: React.FC = () => {
     })
   }
 
+  const handleActionClick = (r: Record, action: string) => {
+    setAction(action)
+    setRecord(r)
+    setVisible(true)
+  }
+
   const callSetRows = (r: RecordsResponse) => {
      setRows(r.records.map(record => (
       <tr key={record.codigo} className="bg-contrast text-secondary rounded-md">
@@ -82,12 +93,19 @@ export const Records: React.FC = () => {
         <td className="p-3 text-center">{record.fecha_termino}</td>
         <td className="p-3 text-center">{record.clientes.filter(c => c.responsable == 1).map(c => <p>{c.nombre}</p>)}</td>
         <td className="p-3 text-center">{record.clientes.filter(c => c.responsable == 0).map(c => <p>{c.nombre}</p>)}</td>
+        <td className="p-3 flex mt-1 justify-center">
+          <button onClick={_ => handleActionClick(record, 'update')} className="mx-2"><Icon icon='fa6-solid:pen-clip'/></button>
+          <button onClick={_ => handleActionClick(record, 'delete')} className="ml-2"><Icon icon='bi:trash-fill'/></button>
+        </td>
       </tr>
     )))
   }
   
   return (
-    <LayaoutWrapper customTable={<Table columns={["codigo", "codigo habitacion", "activa", "fehca inicio", "fecha termino", "responsable", "acompañantes"]} rows={rows} />}>
+    <LayaoutWrapper 
+      customTable={<Table columns={["codigo", "codigo habitacion", "activa", "fehca inicio", "fecha termino", "responsable", "acompañantes", "acciones"]} rows={rows} />}
+      modal={<RecordsModal action={action} handleClose={() => setVisible(false)} object={record} onUpdate={() => setCreation(!creation)} visible={visible} />}
+    >
       <div className="mb-3 text-center">
         <label className="text-3xl text-secondary text-bold">Filtros</label>
       </div>

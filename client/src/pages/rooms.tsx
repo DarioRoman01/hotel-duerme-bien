@@ -104,7 +104,7 @@ export const Rooms: React.FC = () => {
 
   return (
     <LayaoutWrapper 
-      modal={<RoomModal onUpdate={handleUpdate} handleClose={() => setVisible(false)} room={room} visible={visible} action={action} />} 
+      modal={<RoomModal onUpdate={handleUpdate} handleClose={() => setVisible(false)} object={room} visible={visible} action={action} />} 
       customTable={<Table columns={["codigo", "capacidad", "orientacion", "estado", "estado inmueble", "acciones"]} rows={rows} />}
     >
       <div className="mb-3 text-center">
