@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { DeleteFormProps, ModalProps, UpdateFormProps } from "./utils";
-import { Record } from "../requests/requests";
+import { deleteRequest, patchRequest, Record } from "../requests/requests";
 import { ModalWrapper } from "./wrappers";
 import { ErrorAlert } from "./error";
 import { FloatingLabelInput } from "./floatingLabel";
@@ -28,14 +28,19 @@ const UpdateRecordForm: React.FC<UpdateFormProps<Record>> = ({object, onUpdate})
   }, [object]);
 
   const handleSubmit = () => {
+    setShow(false);
     const body = {
       objectId: object.codigo,
       state: state,
       finish: finish
     }
-    console.log(body)
 
-
+    patchRequest<any>(body, 'records')
+    .then(_ => onUpdate())
+    .catch(err => {
+      setErr(err)
+      setShow(true)
+    })
   }
 
   return (<>
@@ -60,6 +65,16 @@ const DeleteRecordForm: React.FC<DeleteFormProps<Record>> = ({object, onCancel, 
   const [err, setErr] = useState('');
   const [show, setShow] = useState(false);
 
+  const handleSubmit = () => {
+    setShow(false)
+    deleteRequest(`records?record=${object.codigo}`)
+    .then(_ => onDelete())
+    .catch(err => {
+      setErr(err)
+      setShow(true)
+    })
+  }
+
   return (
     <>
       <div className="col-span-12">
@@ -73,7 +88,7 @@ const DeleteRecordForm: React.FC<DeleteFormProps<Record>> = ({object, onCancel, 
             </button>
           </div>
           <div className="w-full flex justify-center">
-            <button  className="w-[45%] text-contrast bg-red text-last font-bold py-2 px-4 rounded">
+            <button onClick={handleSubmit}  className="w-[45%] text-contrast bg-red text-last font-bold py-2 px-4 rounded">
               Confirmar
             </button>
           </div>

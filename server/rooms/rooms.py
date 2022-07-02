@@ -202,6 +202,13 @@ class RoomHandler:
         self.__db.queryDB("DELETE FROM objeto_habitacion WHERE codigo = %s", (objectId, ))
         self.__db.commit()
 
+    def deleteRoomRecord(self, recordId):
+        if not self.__db.checkExistanse("SELECT * historial_habitacion WHERE codigo = %s", (recordId, )):
+            raise NotFoundError(f'no se encontro un historial de habitacion con el codigo = {recordId}')
+
+        self.__db.queryDB("UPDATE historial_habitacion SET eliminado = true WHERE codigo = %s", (recordId,))
+        self.__db.commit()
+
     def updateRoomObject(self, objectId, state, type):
         if not self.__db.checkExistanse("SELECT * FROM objeto_habitacion WHERE codigo = %s", (objectId, )):
             raise NotFoundError(f'No se encontro un objeto con el codigo: {objectId}')
