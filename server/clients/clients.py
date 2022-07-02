@@ -46,6 +46,20 @@ class ClientsHandler:
         self.__db.queryDB("INSERT INTO cliente (rut, nombre, reputacion) VALUES (%s, %s, 100)", (rut, nombre))
         self.__db.commit()
 
+    def updateClient(self, rut, reputation, name):
+        if not self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (rut,)):
+            raise NotFoundError(f'no se encontro un usuario con el rut: {rut}')
+
+        self.__db.queryDB("UPDATE cliente SET reputacion = %s, nombre = %s WHERE rut = %s", (reputation, name, rut))
+        self.__db.commit()
+
+    def deleteClient(self, rut):
+        if not self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (rut,)):
+            raise NotFoundError(f'no se encontro un usuario con el rut: {rut}')
+
+        self.__db.queryDB("UPDATE cliente SET eliminado = true WHERE rut = %s", (rut, ))
+        self.__db.commit()
+
     def validateRoomAsignment(self, room, responsable, companions):
         roomData = self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (room,))
         if not roomData:
@@ -105,7 +119,7 @@ class ClientsHandler:
         self.__db.commit()
 
     def listAllClients(self):
-        self.__db.queryDB("SELECT * FROM cliente")
+        self.__db.queryDB("SELECT * FROM cliente where eliminado = false")
         raw_clients = self.__db.fetchAll()
         clients = []
         for c in raw_clients:
@@ -126,9 +140,9 @@ class ClientsHandler:
         return clients
 
     def filterClients(self, filters: dict):
-        query = "SELECT * FROM cliente"
+        query = "SELECT * FROM cliente WHERE eliminado = false"
         if filters.get("name") != None:
-            query += f" WHERE nombre like '%{filters.get('name')}%'"
+            query += f" AND nombre like '%{filters.get('name')}%'"
 
         self.__db.queryDB(query)
         raw_clients = self.__db.fetchAll()
