@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict
 from db import DB
 from clients import Client
@@ -33,7 +34,10 @@ class RoomHandler:
                 where ch.codigo_historial = %s;
             """, (r[0], ))
 
-            record = RoomHistory(r[0], r[1], r[2], r[3], r[4]) 
+            startDate = r[3].strftime("%Y-%m-%d %H:%M")
+            finishDate = r[4].strftime("%Y-%m-%d %H:%M")
+
+            record = RoomHistory(r[0], r[1], r[2], str(startDate), str(finishDate)) 
             record.setClients([Client(c[0], c[1], c[2], c[3]).toDict() for c in self.__db.fetchAll()])
             records.append(record.toDict())
 
@@ -191,6 +195,20 @@ class RoomHandler:
         self.__db.queryDB("UPDATE habitacion SET eliminada = true WHERE codigo = %s",  (roomId, ))
         self.__db.commit()
 
+    def deleteRoomObject(self, objectId):
+        if not self.__db.checkExistanse("SELECT * FROM objeto_habitacion WHERE codigo = %s", (objectId, )):
+            raise NotFoundError(f'No se encontro un objeto con el codigo: {objectId}')
+
+        self.__db.queryDB("DELETE FROM objeto_habitacion WHERE codigo = %s", (objectId, ))
+        self.__db.commit()
+
+    def updateRoomObject(self, objectId, state, type):
+        if not self.__db.checkExistanse("SELECT * FROM objeto_habitacion WHERE codigo = %s", (objectId, )):
+            raise NotFoundError(f'No se encontro un objeto con el codigo: {objectId}')
+
+        self.__db.queryDB("UPDATE objeto_habitacion SET tipo = %s, estado = %s WHERE codigo = %s", (type, state, objectId))
+        self.__db.commit()
+
     def updateRoom(self, room, newCapacity, newOrientation):
         if not self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (room, )):
             raise NotFoundError(f'No se ha encontrado una habitacion con el codigo {room}')
@@ -198,7 +216,13 @@ class RoomHandler:
         self.__db.queryDB("UPDATE habitacion SET orientacion = %s, capacidad = %s WHERE codigo = %s", (newOrientation, newCapacity, room))
         self.__db.commit()
 
-        
+    def updateRecord(self, recordId, state, finish):
+        if not self.__db.queryDB("SELECT * FROM historial_habitacion WHERE codigo = %s"):
+            raise NotFoundError(f'no se encontro un registro con el codigo: {recordId}')
+
+        self.__db.queryDB("UPDATE historial_habitacion SET estado = %s, fecha_termino = %s WHERE codigo = %s", (state, finish, recordId))
+        self.__db.commit()
+
 class Room:
     def __init__(self, codigo, capacidad, orientacion, estado, estad_i) -> None:
         self.codigo = codigo
