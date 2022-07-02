@@ -34,6 +34,7 @@ const RoomUpdateModal: React.FC<UpdateFormProps<Room>> = ({object, onUpdate}) =>
   }, [object])
 
   const handleUpdateSubmit = () => {
+    setShow(false)
     const body = { room: object.codigo, capacity: capacity, orientation: orientation }
     patchRequest<any>(body, 'rooms')
     .then(_ => onUpdate())

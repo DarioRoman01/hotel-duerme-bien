@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Client } from "../requests/requests";
+import { Client, deleteRequest, patchRequest } from "../requests/requests";
 import { ErrorAlert } from "./error";
 import { FloatingLabelInput } from "./floatingLabel";
 import { DeleteFormProps, ModalProps, UpdateFormProps } from "./utils";
 import { ModalWrapper } from "./wrappers";
 
 export const ClientsModal: React.FC<ModalProps<Client>> = ({visible, object, handleClose, action, onUpdate}) => {
+  const handleEvent = () => {
+    onUpdate();
+    handleClose();
+  }
+
   return (
     <ModalWrapper title={`Cliente: ${object.nombre}`} handleClose={handleClose} visible={visible}>
-      {action === 'update' && (<UpdateClientForm object={object} onUpdate={onUpdate} />)}
-      {action === 'delete' && (<DeleteClientForm object={object} onCancel={handleClose} onDelete={onUpdate} />)}
+      {action === 'update' && (<UpdateClientForm object={object} onUpdate={handleEvent} />)}
+      {action === 'delete' && (<DeleteClientForm object={object} onCancel={handleClose} onDelete={handleEvent} />)}
     </ModalWrapper>
   )
 }
@@ -25,16 +30,30 @@ const UpdateClientForm: React.FC<UpdateFormProps<Client>> = ({object, onUpdate})
     setName(object.nombre);
   }, [object])
 
+  const handleSubmit = () => {
+    const body = {
+      rut: object.rut,
+      name: name,
+      reputation: reputation
+    }
+
+    patchRequest<any>(body, 'clients')
+    .then(_ => onUpdate())
+    .catch(err => {
+      setErr(err.message)
+      setShow(true)
+    })
+  }
 
   return (<>
     <div className="col-span-12 p-5">
-        <FloatingLabelInput onChange={e => setReputation(e.currentTarget.value)} placeholder="Estado" type="Reputacion" value={reputation} />
+        <FloatingLabelInput onChange={e => setReputation(e.currentTarget.value)} placeholder="Reputacion" type="text" value={reputation} />
       </div>
       <div className="col-span-12 p-5">
-        <FloatingLabelInput onChange={e => setName(e.currentTarget.value)} placeholder="Tipo Objeto" type="Nombre" value={name} />
+        <FloatingLabelInput onChange={e => setName(e.currentTarget.value)} placeholder="Nombre" type="text" value={name} />
       </div>
       <div className="col-span-12 p-5">
-        <button  className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
+        <button onClick={handleSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Actualizar
         </button>
       </div>
@@ -50,8 +69,13 @@ const DeleteClientForm: React.FC<DeleteFormProps<Client>> = ({object, onCancel, 
 
 
   const handleSubmit = () => {
-    console.log(`delete object ${object.nombre}`)
-    onDelete();
+    setShow(false);
+    deleteRequest<any>(`clients?rut=${object.rut}`)
+    .then(_ => onDelete())
+    .catch(err => {
+      setErr(err.message)
+      setShow(true)
+    })
   }
 
   return (

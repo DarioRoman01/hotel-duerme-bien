@@ -24,18 +24,29 @@ const UpdateRecordForm: React.FC<UpdateFormProps<Record>> = ({object, onUpdate})
 
   useEffect(() => {
     setState(object.activa ? "activa" : "no activa");
-    setFinish(object.fecha_termino);
+    setFinish(object.fecha_termino.replace(' ', 'T'));
   }, [object]);
+
+  const handleSubmit = () => {
+    const body = {
+      objectId: object.codigo,
+      state: state,
+      finish: finish
+    }
+    console.log(body)
+
+
+  }
 
   return (<>
     <div className="col-span-12 p-5">
       <Select options={[['1', 'activa'], ['0', 'no activa']]} selected={object.activa ? "1" : "0"} handleChange={e => setFinish(e.currentTarget.value)} />
       </div>
       <div className="col-span-12 p-5">
-        <DatePicker label="Fecha Termino" type="datetime-local" onChange={e => setFinish(e.currentTarget.value.replace('T', ' '))}/>
+        <DatePicker label="Fecha Termino" type="datetime-local" value={finish}  onChange={e => setFinish(e.currentTarget.value.replace('T', ' '))}/>
       </div>
       <div className="col-span-12 p-5">
-        <button className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
+        <button onClick={handleSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Actualizar
         </button>
       </div>

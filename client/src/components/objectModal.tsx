@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { RoomObject } from "../requests/requests";
+import { deleteRequest, patchRequest, RoomObject } from "../requests/requests";
 import { ErrorAlert } from "./error";
 import { FloatingLabelInput } from "./floatingLabel";
 import { DeleteFormProps, ModalProps, UpdateFormProps } from "./utils";
@@ -19,21 +19,19 @@ export const ObjectModal: React.FC<ModalProps<RoomObject>> = ({object, visible, 
   )
 }
 
-interface DeleteObjectProps {
-  object: RoomObject
-  onUpdate: Function,
-  onCancel: Function
-}
-
-
 const DeleteObjectForm: React.FC<DeleteFormProps<RoomObject>> = ({object, onDelete, onCancel}) => {
   const [err, setErr] = useState('');
   const [show, setShow] = useState(false);
 
 
   const handleSubmit = () => {
-    console.log(`delete object ${object.codigo}`)
-    onDelete();
+    setShow(false)
+    deleteRequest<any>(`objects?objectId=${object.codigo}`)
+    .then(_ => onDelete)
+    .catch(err => {
+      setErr(err)
+      setShow(true)
+    })
   }
 
   return (
@@ -70,11 +68,18 @@ const UpdateObjectForm: React.FC<UpdateFormProps<RoomObject>> = ({object, onUpda
 
   const handleSubmit = () => {
     setShow(false)
-    console.log({state: state, type: tipo})
-    setErr('errorrrrr')
-    setTimeout(() => {
+    const body = {
+      state: state,
+      type: tipo,
+      objectId: object.codigo
+    }
+
+    patchRequest<any>(body, 'objects')
+    .then(_ => onUpdate())
+    .catch(err => {
+      setErr(err)
       setShow(true)
-    }, 4000)
+    })
   }
 
   useEffect(() => {
