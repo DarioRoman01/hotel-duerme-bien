@@ -74,13 +74,36 @@ def createUser():
     except BaseException as err:
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
-@app.route("/clients", methods=["GET", "POST"])
+@app.route("/clients", methods=["GET", "POST", "PATCH", "DELETE"])
 @login_required
 def handleClientsRequests():
     if request.method == "POST":
         filters = request.get_json()
         clients = clientsHandler.filterClients(filters)
         return make_response(jsonify({'clients': clients}), 200)
+
+    elif request.method == "PATCH":
+        try:
+            data = request.get_json()
+            clientsHandler.updateClient(data.get('rut'), data.get('reputation'), data.get('name'))
+            return make_response(jsonify({'ok': 'ok'}), 200)
+        except NotFoundError as err:
+            return make_response(jsonify({'error': str(err)}))
+        except:
+            return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
+
+    elif request.method == "DELETE":
+        try:
+            args = request.args.to_dict()
+            clientsHandler.deleteClient(args.get('rut'))
+            return make_response(jsonify({'ok': 'ok'}), 200)
+
+        except NotFoundError as err:
+            return make_response(jsonify({'error': str(err)}), 400)
+
+        except:
+            return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
+
     else:
         clients = clientsHandler.listAllClients()
         return make_response(jsonify({'clients': clients}), 200)
@@ -151,16 +174,40 @@ def createRecord():
     except NotFoundError as err:
         return make_response(jsonify({'error': str(err)}), 404)
 
-    # except:
-    #     return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
+    except:
+        return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
-@app.route("/objects", methods=["GET", "POST"])
+@app.route("/objects", methods=["GET", "POST", "PATCH", "DELETE"])
 @login_required
 def handleObjsRequests():
     if request.method == "POST":
         filters = request.get_json()
         objs = roomHandler.filterObjects(filters)
         return make_response(jsonify({'objects': objs}), 200)
+    
+    elif request.method == "PATCH":
+        try:
+            data = request.get_json()
+            roomHandler.updateRoomObject(data.get('codigo'), data.get('state'), data.get('type'))
+            return make_response(jsonify({'ok': 'ok'}))
+
+        except NotFoundError as err:
+            return make_response(jsonify({'error': str(err)}), 404)
+
+        except:
+            return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
+
+    elif request.method == "DELETE":
+        try:
+            args = request.args.to_dict()
+            roomHandler.deleteRoomObject(args.get('objectId'))
+            return make_response(jsonify({'ok': 'ok'}), 200)
+
+        except NotFoundError as err:
+            return make_response(jsonify({'error': str(err)}), 404)
+
+        except:
+            return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
     objs = roomHandler.listAllObjects()
     return make_response(jsonify({'objects': objs}), 200)
