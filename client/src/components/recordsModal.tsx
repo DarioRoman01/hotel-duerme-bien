@@ -27,7 +27,7 @@ const UpdateRecordForm: React.FC<UpdateFormProps<Record>> = ({object, onUpdate})
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    setState(object.activa ? "activa" : "no activa");
+    setState(object.activa ? '1' : '0');
     setFinish(object.fecha_termino.replace(' ', 'T'));
   }, [object]);
 
@@ -36,7 +36,7 @@ const UpdateRecordForm: React.FC<UpdateFormProps<Record>> = ({object, onUpdate})
     const body = {
       recordId: object.codigo,
       state: state,
-      finish: finish
+      finish: finish.replace('T', ' ')
     }
 
     patchRequest<any>(body, 'records')
@@ -49,10 +49,10 @@ const UpdateRecordForm: React.FC<UpdateFormProps<Record>> = ({object, onUpdate})
 
   return (<>
     <div className="col-span-12 p-5">
-      <Select options={[['1', 'activa'], ['0', 'no activa']]} selected={object.activa ? "1" : "0"} handleChange={e => setState(e.currentTarget.value)} />
+      <Select options={[['1', 'activa'], ['0', 'no activa']]} selected={state} handleChange={e => setState(e.currentTarget.value)} />
       </div>
       <div className="col-span-12 p-5">
-        <DatePicker label="Fecha Termino" type="datetime-local" value={finish}  onChange={e => setFinish(e.currentTarget.value.replace('T', ' '))}/>
+        <DatePicker label="Fecha Termino" type="datetime-local" value={finish}  onChange={e => setFinish(e.currentTarget.value)}/>
       </div>
       <div className="col-span-12 p-5">
         <button onClick={handleSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">

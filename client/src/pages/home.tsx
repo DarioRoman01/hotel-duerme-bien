@@ -1,17 +1,18 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { getCookie } from "typescript-cookie";
 import { getRequest } from "../requests/requests";
 
 export const Home: React.FC = () => {
-  const currentUserType = getCookie('currentUserType');
+  const currentUserType = localStorage.getItem('currentUserType')
   const navigate = useNavigate();
-  
   if (!currentUserType) navigate('/login')
 
   const logout = () => {
     getRequest<any>('logout')
-    .then(_ => navigate('/'))
+    .then(_ => {
+      localStorage.removeItem('currentUserType')
+      navigate('/')
+    })
     .catch(err => console.log(err))
   }
   
@@ -20,7 +21,7 @@ export const Home: React.FC = () => {
       <div className="text-center p-5">
         <p className="text-3xl text-secondary font-bold">Bienvenido {currentUserType}</p>
       </div>
-      <div className="flex flex-col items-center min-w-sreen h-80 p-3">
+      <div className="flex flex-col items-center min-w-sreen min-h-80 p-3">
         {currentUserType === 'gerente' && (
           <>
             <div className="p-5 w-[50%]">

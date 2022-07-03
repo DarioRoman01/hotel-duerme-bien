@@ -13,7 +13,7 @@ export const ObjectModal: React.FC<ModalProps<RoomObject>> = ({object, visible, 
 
   return (
     <ModalWrapper title={`Objeto: ${object.codigo}`} handleClose={handleClose} visible={visible}>
-      {action === "update" && (<UpdateObjectForm object={object} onUpdate={onUpdate} />)}
+      {action === "update" && (<UpdateObjectForm object={object} onUpdate={handleEvent} />)}
       {action === "delete" && (<DeleteObjectForm onCancel={handleClose} onDelete={handleEvent} object={object} />)}
     </ModalWrapper>
   )

@@ -17,7 +17,7 @@ def login():
         return make_response(jsonify({"error": "credenciales invalidas"}), 401)
 
     response = make_response(jsonify(user.toDict()), 200)
-    response.set_cookie('currentUserType', user.type)
+    response.set_cookie('currentUserType', user.type, samesite='none', secure=True)
     return response
 
 @app.route("/rooms", methods=["GET", "POST", "PATCH", "DELETE"])
@@ -109,7 +109,7 @@ def handleClientsRequests():
 
     except NotCompatibleError as err:
         return make_response(jsonify({'error': str(err)}), 400)
-        
+
     except:
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
@@ -231,7 +231,7 @@ def handleObjsRequests():
 @login_required
 def logoutUser():
     response = make_response(jsonify({'logout': True}), 200)
-    response.set_cookie('currentUserType', '', expires=0)
+    response.set_cookie('currentUserType', '', samesite='none', secure=True, expires=0)
     return response
 
 @app.route("/objects/create", methods=["POST"])

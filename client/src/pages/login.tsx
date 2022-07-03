@@ -13,7 +13,10 @@ export const Login: React.FC = () => {
 
   const handleSubmit = () => {
     postRequest<User>({username: username, password: pwd}, 'login')
-    .then(_ => navigate('/home'))
+    .then(user => {
+      localStorage.setItem('currentUserType', user.type)
+      navigate('/home')
+    })
     .catch(err=> {
       setFailMessage(err.message);
       setFail(true);
