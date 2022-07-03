@@ -7,7 +7,7 @@ from clients import ClientsHandler
 from utils import login_required, NotFoundError, AlreadyExistsError, NotCompatibleError
 
 app = Flask(__name__)
-CORS(app, origins="http://localhost:3000", supports_credentials=True)
+CORS(app, origins="*", supports_credentials=True)
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -31,7 +31,7 @@ def handleRoomRequest():
 
         elif request.method == "PATCH":
             data = request.get_json()
-            roomHandler.updateRoom(data.get("room"), data.get('capacity'), data.get('orientation'))
+            roomHandler.updateRoom(data.get("room"), data.get('capacity'), data.get('orientation'), data.get('state'))
             return make_response(jsonify({'ok': 'ok'}), 200)
         
         elif request.method == "DELETE":
@@ -47,24 +47,37 @@ def handleRoomRequest():
     
     except NotFoundError as err:
         return make_response(jsonify({'error': str(err)}), 404)
+
+    except NotCompatibleError as err:
+        return make_response(jsonify({'error': str(err)}), 400)
+
     except:
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
-@app.route("/users", methods=["GET"])
+@app.route("/users", methods=["GET", "POST", "DELETE"])
 @login_required
-def listUsers():
-    users = userHandler.listUsers()
-    return make_response(jsonify({'users': users}), 200)
-
-@app.route("/users/create", methods=["POST"])
-@login_required
-def createUser():
+def handleUsersRequest():
     try:
-        data = request.get_json()
-        userHandler.crearUsuario(data.get("username"), data.get("password"), "gerente")
-        return make_response(jsonify({'ok': 'ok'}), 200)
+        if request.method == "POST":
+            data = request.get_json()
+            userHandler.crearUsuario(data.get("username"), data.get("password"), "gerente")
+            return make_response(jsonify({'ok': 'ok'}), 200)
+
+        elif request.method == "DELETE":
+            args = request.args.to_dict()
+            userHandler.deleteUser(args.get('user'))
+            return make_response(jsonify({'ok': 'ok'}), 200)
+
+        else:
+            users = userHandler.listUsers()
+            return make_response(jsonify({'users': users}), 200)
+
+    except NotFoundError as err:
+        return make_response(jsonify({'error': str(err)}), 404) 
+
     except AlreadyExistsError as err:
-        return make_response(jsonify({'error': str(err)}), 400) 
+        return make_response(jsonify({'error': str(err)}), 400)
+
     except:
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
@@ -93,6 +106,10 @@ def handleClientsRequests():
 
     except NotFoundError as err:
         return make_response(jsonify({'error': str(err)}), 404)
+
+    except NotCompatibleError as err:
+        return make_response(jsonify({'error': str(err)}), 400)
+        
     except:
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
@@ -159,6 +176,8 @@ def handleRecordsRequests():
 
     except NotFoundError as err:
         return make_response(jsonify({'error': str(err)}), 404)
+    except NotCompatibleError as err:
+        return make_response(jsonify({'error': str(err)}), 400)
     except:
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
 
@@ -191,7 +210,7 @@ def handleObjsRequests():
         
         elif request.method == "PATCH":
             data = request.get_json()
-            roomHandler.updateRoomObject(data.get('codigo'), data.get('state'), data.get('type'))
+            roomHandler.updateRoomObject(data.get('objectId'), data.get('state'), data.get('type'))
             return make_response(jsonify({'ok': 'ok'}))
 
         elif request.method == "DELETE":
@@ -207,6 +226,13 @@ def handleObjsRequests():
     except:
         return make_response(jsonify({'error': 'ocurrio un error inesperado'}), 500)
     
+
+@app.route("/logout", methods=["GET"])
+@login_required
+def logoutUser():
+    response = make_response(jsonify({'logout': True}), 200)
+    response.set_cookie('currentUserType', '', expires=0)
+    return response
 
 @app.route("/objects/create", methods=["POST"])
 @login_required
