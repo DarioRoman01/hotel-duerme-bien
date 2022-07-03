@@ -1,17 +1,19 @@
 import { Icon } from "@iconify/react";
 import React, { useEffect, useState } from "react";
-import { Navbar } from "../components/navbar";
 import { Table } from "../components/table";
-import { getRequest, postRequest, UsersResponse } from "../requests/requests";
+import { getRequest, postRequest, User, UsersResponse } from "../requests/requests";
 import { FormWrapper, LayaoutWrapper } from "../components/wrappers";
 import { FloatingLabelInput } from "../components/floatingLabel";
 import { ErrorAlert } from "../components/error";
+import { UsersModal } from "../components/usersModal";
 
 export const Users: React.FC = () => {
   const [rows, setRows] = useState([] as JSX.Element[]);
   const [creation, setCreation] = useState(false);
   const [err, setErr] = useState('')
   const [show, setShow] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [user, setUser] = useState({} as User)
 
   const [username, setUsername] = useState('');
   const [pwd, setPwd] = useState('');
@@ -23,6 +25,11 @@ export const Users: React.FC = () => {
     .catch(err => console.log(err))
   }, [creation])
 
+  const handleActionClick = (user: User) => {
+    setUser(user)
+    setVisible(true)
+  }
+
   const callSetRows = (u: UsersResponse) => {
     setRows(u.users.map(user => (
       <tr key={user.codigo} className="bg-contrast text-secondary rounded-md">
@@ -30,15 +37,14 @@ export const Users: React.FC = () => {
         <td className="p-3 text-center">{user.username}</td>
         <td className="p-3 text-center">{user.type}</td>
         <td className="p-3 flex mt-1 justify-center">
-          <button className="mx-2"><Icon icon='fa6-solid:pen-clip'/></button>
-          <button className="ml-2"><Icon icon='bi:trash-fill'/></button>
+          <button onClick={_ => handleActionClick(user)} className="ml-2"><Icon icon='bi:trash-fill'/></button>
         </td>
       </tr>
     )))
   }
 
   const handleCreationSubmit = () => {
-    if(pwd != pwdConfirm) {
+    if(pwd !== pwdConfirm) {
       setErr('Las contraseñas no coinciden!')
       setShow(true)
       return
@@ -53,7 +59,7 @@ export const Users: React.FC = () => {
     setShow(false);
     const body = { username: username, password: pwd };
 
-    postRequest<any>(body, 'users/create')
+    postRequest<any>(body, 'users')
     .then(_ => setCreation(!creation))
     .catch(err => {
       setErr(err.message);
@@ -62,7 +68,9 @@ export const Users: React.FC = () => {
   }
 
   return (
-    <LayaoutWrapper customTable={<Table columns={["Codigo", "Nombre", "Tipo", "Acciones"]} rows={rows} />}>
+    <LayaoutWrapper customTable={<Table columns={["Codigo", "Nombre", "Tipo", "Acciones"]} rows={rows} />}
+      modal={<UsersModal action="" handleClose={() => setVisible(false)} object={user} visible={visible} onUpdate={() => setCreation(!creation)} />}
+    >
       <div className="mb-3 text-center">
         <label className="text-3xl text-secondary text-bold">Agregar Usuario</label>
       </div>

@@ -91,7 +91,7 @@ export const Clients: React.FC = () => {
       modal={<ClientsModal onUpdate={() => setCreation(!creation)} handleClose={() => setVisible(false)} object={client} visible={visible} action={action} />}
     >
       <div className="mb-3 text-center">
-        <label className="text-3xl text-secondary text-bold">Filtros</label>
+        <label className="text-3xl text-secondary font-bold">Filtros</label>
       </div>
       <FormWrapper children={<Select handleChange={e => setTipo(e.target.value)} options={[['', 'Tipo Cliente'], ['pasajero responsable', 'Pasajero responsable'], ['acompañante', 'Acompañante']]}/>} />
       <FormWrapper children={<FloatingLabelInput placeholder="Nombre" type='text' onChange={e => setName(e.currentTarget.value)} />} />
@@ -102,7 +102,7 @@ export const Clients: React.FC = () => {
         </button>
       </div>
       <div className="my-3 text-center">
-        <label className="text-3xl text-secondary text-bold">Agregar Cliente</label>
+        <label className="text-3xl text-secondary font-bold">Agregar Cliente</label>
       </div>
       <FormWrapper children={<FloatingLabelInput placeholder="Nombre" type='text' onChange={e => setNewName(e.currentTarget.value)} />} />
       <FormWrapper children={<FloatingLabelInput placeholder="Rut" type='text' onChange={e => setNewRut(e.currentTarget.value)} />} />

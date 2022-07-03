@@ -24,7 +24,7 @@ export const Login: React.FC = () => {
     <div className="lg:container lg:mx-auto min-h-screen flex justify-center items-center">
       <div className="grid grid-cols-1 w-fit sm:w-2/6 gap-5">
         <div className="text-center">
-          <label className="text-2xl text-secondary">Login</label>
+          <label className="text-2xl text-secondary font-bold">Login</label>
         </div>
         <div>
           <FloatingLabelInput onChange={e => setUsername(e.currentTarget.value)} placeholder="usuario" type="text" />

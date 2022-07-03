@@ -107,7 +107,7 @@ export const Records: React.FC = () => {
       modal={<RecordsModal action={action} handleClose={() => setVisible(false)} object={record} onUpdate={() => setCreation(!creation)} visible={visible} />}
     >
       <div className="mb-3 text-center">
-        <label className="text-3xl text-secondary text-bold">Filtros</label>
+        <label className="text-3xl text-secondary font-bold">Filtros</label>
       </div>
 
       <FormWrapper children={<Select handleChange={e => setState(e.target.value)} options={[['', 'Estado'], ['1', 'Activa'], ['0', 'No activa']]} />} />
@@ -121,7 +121,7 @@ export const Records: React.FC = () => {
         </button>
       </div>
       <div className="my-3 text-center">
-        <label className="text-3xl text-secondary text-bold">Agregar Registro</label>
+        <label className="text-3xl text-secondary font-bold">Agregar Registro</label>
       </div>
       <FormWrapper children={<FloatingLabelInput onChange={e => setNewRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
       <FormWrapper children={<FloatingLabelInput onChange={e => setNewResponsable(e.currentTarget.value)} placeholder="Responsable" type="text"/>} />

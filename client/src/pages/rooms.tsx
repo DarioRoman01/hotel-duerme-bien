@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { getRequest, RoomsResponse, postRequest, Room } from "../requests/requests";
 import { Table } from "../components/table";
-import { Navbar } from "../components/navbar";
 import { Icon } from '@iconify/react';
 import { MultiRangeSlider } from "../components/slider";
 import { FloatingLabelInput } from "../components/floatingLabel";
@@ -108,25 +107,25 @@ export const Rooms: React.FC = () => {
       customTable={<Table columns={["codigo", "capacidad", "orientacion", "estado", "estado inmueble", "acciones"]} rows={rows} />}
     >
       <div className="mb-3 text-center">
-        <label className="text-3xl text-secondary text-bold">Filtros</label>
+        <label className="text-3xl text-secondary font-bold">Filtros</label>
       </div>
       <FormWrapper children={<Select handleChange={(e) => setEstado(e.target.value)} options={[['', 'Estado'], ['ocupada', 'Ocupada'], ['reservada', 'Reservada'], ['libre', 'Libre']]}/>} />
       <FormWrapper children={<Select handleChange={e => setOrientacion(e.target.value)} options={[['', 'Orientacion'], ['norte', 'Norte'], ['sur', 'Sur'], ['este', 'Este'], ['oeste', 'Oeste']]} />} />
+      <FormWrapper children={<FloatingLabelInput placeholder="capacidad" type='text' onChange={e => setCapacity(e.currentTarget.value)} />} />
       <div className="min-w-full text-center mb-8">
-        <label className="mt-3 text-xl text-secondary">Estado Inventario</label>
+        <label className="mt-3 text-xl text-secondary font-bold">Estado Inventario</label>
         <MultiRangeSlider min={minVal} max={maxVal} onChange={({ min, max }: { min: number; max: number }) => { 
           minVal = min; 
           maxVal = max;
         }}/>
       </div>
-      <FormWrapper children={<FloatingLabelInput placeholder="capacidad" type='text' onChange={e => setCapacity(e.currentTarget.value)} />} />
       <div className="min-w-full">
         <button onClick={handleFilterSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Filtrar
         </button>
       </div>
       <div className="my-3 text-center">
-        <label className="text-3xl text-secondary text-bold">Agregar Habitacion</label>
+        <label className="text-3xl text-secondary font-bold">Agregar Habitacion</label>
       </div>
       <FormWrapper children={<FloatingLabelInput placeholder="Codigo" type='text' onChange={e => setNewCodigo(e.currentTarget.value)} />} />
       <FormWrapper children={<FloatingLabelInput placeholder="Capacidad" type='text' onChange={e => setNewCapacity(e.currentTarget.value)} />} />

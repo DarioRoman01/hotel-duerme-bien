@@ -121,12 +121,12 @@ export const Objects: React.FC = () => {
       customTable={<Table columns={["codigo", "habitacion", "estado", "tipo", "acciones"]} rows={rows} />}
     >
       <div className="mb-3 text-center">
-        <label className="text-3xl text-secondary text-bold">Filtros</label>
+        <label className="text-3xl text-secondary font-bold">Filtros</label>
       </div>
       <FormWrapper children={<FloatingLabelInput onChange={e => setRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
       <FormWrapper children={<FloatingLabelInput onChange={e => setTipo(e.currentTarget.value)} placeholder="Tipo Objeto" type="text"/>} />
       <div className="min-w-full text-center mb-8">
-        <label className="mt-3 text-xl text-secondary">Estado Inventario</label>
+        <label className="mt-3 text-xl text-secondary font-bold">Estado Inventario</label>
         <MultiRangeSlider min={minVal} max={maxVal} onChange={({ min, max }: { min: number; max: number }) => { 
           minVal = min; 
           maxVal = max;
@@ -138,7 +138,7 @@ export const Objects: React.FC = () => {
         </button>
       </div>
       <div className="mb-3 text-center">
-        <label className="text-3xl text-secondary text-bold">Agregar objeto</label>
+        <label className="text-3xl text-secondary font-bold">Agregar objeto</label>
       </div>
       <FormWrapper children={<FloatingLabelInput onChange={e => setNewRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
       <FormWrapper children={<FloatingLabelInput onChange={e => setNewTipo(e.currentTarget.value)} placeholder="Tipo Objeto" type="text"/>} />

@@ -89,7 +89,7 @@ export async function postRequest<T>(body: Object, endpoint: string): Promise<T>
   return await res.json()
 }
 
-// api is a generic function to make get requests
+// get request is a generic function to make get requests
 export async function getRequest<T>(endpoint: string): Promise<T> {
   const response = await fetch(`http://localhost:5000/${endpoint}`, {
     credentials: 'include',
@@ -102,6 +102,7 @@ export async function getRequest<T>(endpoint: string): Promise<T> {
   return await response.json();
 }
 
+// genereci function to handle patch requests
 export async function patchRequest<T>(body: object, endpoint: string): Promise<T>  {
   const res = await fetch(`http://localhost:5000/${endpoint}`, {
     method: "patch",
@@ -118,6 +119,7 @@ export async function patchRequest<T>(body: object, endpoint: string): Promise<T
 
 }
 
+// generic function to handle delete requests
 export async function deleteRequest<T>(endpoint: string): Promise<T> {
   const res = await fetch(`http://localhost:5000/${endpoint}`, {
     method: "delete",
