@@ -77,7 +77,7 @@ const UpdateObjectForm: React.FC<UpdateFormProps<RoomObject>> = ({object, onUpda
     patchRequest<any>(body, 'objects')
     .then(_ => onUpdate())
     .catch(err => {
-      setErr(err)
+      setErr(err.message)
       setShow(true)
     })
   }

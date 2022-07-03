@@ -15,29 +15,29 @@ export const Navbar = () => {
               {currentUserType === 'administrador' && (
                 <li className="nav-item">
                   <a className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-secondary hover:opacity-75" href="/users">
-                    <i className="fab fa-pinterest text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2">Usuarios</span>
+                    <i className="text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2 font-bold">Usuarios</span>
                   </a>
                 </li>
               )}
               {currentUserType === 'gerente' && (<>
                 <li className="nav-item">
                   <a className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-secondary hover:opacity-75" href="/clients">
-                    <i className="fab fa-facebook-square text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2">Clientes</span>
+                    <i className="square text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2 font-bold">Clientes</span>
                   </a>
                 </li>
                 <li className="nav-item">
                   <a className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-secondary hover:opacity-75" href="/rooms">
-                    <i className="fab fa-twitter text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2">Habitaciones</span>
+                    <i className="text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2 font-bold">Habitaciones</span>
                   </a>
                 </li>
                 <li className="nav-item">
                   <a className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-secondary hover:opacity-75" href="/records">
-                    <i className="fab fa-pinterest text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2">Historial</span>
+                    <i className="text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2 font-bold">Historial</span>
                   </a>
                 </li>
                 <li className="nav-item">
                   <a className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-secondary hover:opacity-75" href="/objects">
-                    <i className="fab fa-pinterest text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2">Inventario</span>
+                    <i className="text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2 font-bold">Inventario</span>
                   </a>
                 </li>
               </>)}

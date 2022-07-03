@@ -3,15 +3,19 @@ import { DeleteFormProps, ModalProps, UpdateFormProps } from "./utils";
 import { deleteRequest, patchRequest, Record } from "../requests/requests";
 import { ModalWrapper } from "./wrappers";
 import { ErrorAlert } from "./error";
-import { FloatingLabelInput } from "./floatingLabel";
 import { DatePicker } from "./datePickers";
 import { Select } from "./select";
 
 export const RecordsModal: React.FC<ModalProps<Record>> = ({object, action, handleClose, onUpdate, visible}) => {
+  const handleEvent = () => {
+    onUpdate();
+    handleClose();
+  }
+
   return (
     <ModalWrapper handleClose={handleClose} title={`Historial Habitacion: ${object.codigo_habitacion}`} visible={visible}>
-      {action === 'update' && (<UpdateRecordForm object={object} onUpdate={onUpdate}/>)}
-      {action === 'delete' && (<DeleteRecordForm onCancel={handleClose} onDelete={onUpdate} object={object} />)}
+      {action === 'update' && (<UpdateRecordForm object={object} onUpdate={handleEvent}/>)}
+      {action === 'delete' && (<DeleteRecordForm onCancel={handleClose} onDelete={handleEvent} object={object} />)}
     </ModalWrapper>
   )
 }
@@ -30,7 +34,7 @@ const UpdateRecordForm: React.FC<UpdateFormProps<Record>> = ({object, onUpdate})
   const handleSubmit = () => {
     setShow(false);
     const body = {
-      objectId: object.codigo,
+      recordId: object.codigo,
       state: state,
       finish: finish
     }
@@ -38,14 +42,14 @@ const UpdateRecordForm: React.FC<UpdateFormProps<Record>> = ({object, onUpdate})
     patchRequest<any>(body, 'records')
     .then(_ => onUpdate())
     .catch(err => {
-      setErr(err)
+      setErr(err.message)
       setShow(true)
     })
   }
 
   return (<>
     <div className="col-span-12 p-5">
-      <Select options={[['1', 'activa'], ['0', 'no activa']]} selected={object.activa ? "1" : "0"} handleChange={e => setFinish(e.currentTarget.value)} />
+      <Select options={[['1', 'activa'], ['0', 'no activa']]} selected={object.activa ? "1" : "0"} handleChange={e => setState(e.currentTarget.value)} />
       </div>
       <div className="col-span-12 p-5">
         <DatePicker label="Fecha Termino" type="datetime-local" value={finish}  onChange={e => setFinish(e.currentTarget.value.replace('T', ' '))}/>
@@ -70,7 +74,7 @@ const DeleteRecordForm: React.FC<DeleteFormProps<Record>> = ({object, onCancel, 
     deleteRequest(`records?record=${object.codigo}`)
     .then(_ => onDelete())
     .catch(err => {
-      setErr(err)
+      setErr(err.message)
       setShow(true)
     })
   }

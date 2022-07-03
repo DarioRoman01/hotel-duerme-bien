@@ -27,15 +27,17 @@ const RoomUpdateModal: React.FC<UpdateFormProps<Room>> = ({object, onUpdate}) =>
   const [show, setShow] = useState(false);
   const [capacity, setCapacity] = useState('');
   const [orientation, setOrientation] = useState(object.orientacion);
+  const [state, setState] = useState(object.estado);
 
   useEffect(() => {
     setCapacity(object.capacidad.toString());
     setOrientation(object.orientacion);
+    setState(object.estado);
   }, [object])
 
   const handleUpdateSubmit = () => {
     setShow(false)
-    const body = { room: object.codigo, capacity: capacity, orientation: orientation }
+    const body = { room: object.codigo, capacity: capacity, orientation: orientation, state: state }
     patchRequest<any>(body, 'rooms')
     .then(_ => onUpdate())
     .catch(err => {
@@ -50,6 +52,9 @@ const RoomUpdateModal: React.FC<UpdateFormProps<Room>> = ({object, onUpdate}) =>
     </div>
     <div className="col-span-12 p-5">
       <Select selected={object.orientacion} handleChange={e => setOrientation(e.target.value)} options={[['norte', 'Norte'], ['sur', 'Sur'], ['este', 'Este'], ['oeste', 'Oeste']]} />
+    </div>
+    <div className="col-span-12 p-5">
+      <Select selected={object.estado} handleChange={e => setState(e.target.value)} options={[["libre", "Libre"], ["ocupada", "Ocupada"], ["reservada", "Reservada"]]} />
     </div>
     <div className="col-span-12 p-5">
       <div className="">
