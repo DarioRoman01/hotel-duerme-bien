@@ -43,7 +43,7 @@ class ClientsHandler:
         if self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (rut,)):
             raise AlreadyExistsError(f'ya existe un cliente con el rut: {rut}')
 
-        self.__db.queryDB("INSERT INTO cliente (rut, nombre, reputacion) VALUES (%s, %s, 100)", (rut, nombre))
+        self.__db.queryDB("INSERT INTO cliente (rut, nombre, reputacion, eliminado) VALUES (%s, %s, 100, false)", (rut, nombre))
         self.__db.commit()
 
     def updateClient(self, rut, reputation, name):
@@ -54,8 +54,16 @@ class ClientsHandler:
         self.__db.commit()
 
     def deleteClient(self, rut):
-        if not self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (rut,)):
+        client = self.__db.checkExistanse("""select hh.activa, c.nombre from cliente c
+        inner join client_historial ch on c.rut = ch.rut_cliente
+        inner join historial_habitacion hh on ch.codigo_historial = hh.codigo
+        where c.rut = %s;""", (rut,))
+
+        if not client:
             raise NotFoundError(f'no se encontro un usuario con el rut: {rut}')
+
+        elif client[0] == 1:
+            raise NotCompatibleError(f'El cliente {client[1]} se encuentra hospedado actualmente')
 
         self.__db.queryDB("UPDATE cliente SET eliminado = true WHERE rut = %s", (rut, ))
         self.__db.commit()
@@ -65,8 +73,9 @@ class ClientsHandler:
         if not roomData:
             raise NotFoundError(f"No se encontro una habitacion con el codigo {room}")
 
-        if len(companions) > roomData[1]:
-            raise NotCompatibleError(f'La habitacion {room} solo tiene capacidad para {roomData[1]}')
+        if companions:
+            if len(companions) > roomData[1]:
+                raise NotCompatibleError(f'La habitacion {room} solo tiene capacidad para {roomData[1]}')
 
         if roomData[3] == 'ocupada':
             raise NotCompatibleError(f'La habitacion {room} ya esta ocupada')
@@ -83,17 +92,18 @@ class ClientsHandler:
             raise NotCompatibleError(f'El cliente con rut {responsable} ya se encuentra hospedado en el hotel')
 
 
-        for companion in companions:
-            if not self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (companion,)):
-                raise NotFoundError(f"No se encontro un cliente con rut {companion}")
+        if companions:
+            for companion in companions:
+                if not self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (companion,)):
+                    raise NotFoundError(f"No se encontro un cliente con rut {companion}")
 
-            if self.__db.checkExistanse("""
-            select c.rut, c.nombre from cliente c
-            inner join client_historial ch on c.rut = ch.rut_cliente
-            inner join historial_habitacion hh on ch.codigo_historial = hh.codigo
-            where hh.activa = true and c.rut = %s;
-            """, (responsable, )):
-                raise NotCompatibleError(f'El cliente con rut {responsable} ya se encuentra hospedado en el hotel')
+                if self.__db.checkExistanse("""
+                select c.rut, c.nombre from cliente c
+                inner join client_historial ch on c.rut = ch.rut_cliente
+                inner join historial_habitacion hh on ch.codigo_historial = hh.codigo
+                where hh.activa = true and c.rut = %s;
+                """, (responsable, )):
+                    raise NotCompatibleError(f'El cliente con rut {responsable} ya se encuentra hospedado en el hotel')
 
     def asingRoom(self, room: int, companions: list[str], start: str,  finish: str, responsable: str):
         self.validateRoomAsignment(room, responsable, companions)
@@ -106,15 +116,16 @@ class ClientsHandler:
             start_date = start
 
         self.__db.queryDB("""
-            INSERT INTO historial_habitacion (codigo_habitacion, activa, fecha_asignacion, fecha_termino)
-            VALUES(%s, true, %s, %s);
+            INSERT INTO historial_habitacion (codigo_habitacion, activa, fecha_asignacion, fecha_termino, eliminada)
+            VALUES(%s, true, %s, %s, false);
         """, (room, start_date, finish))
         
         recordId =  self.__db.getLastInsertedId()
         self.__db.queryDB("INSERT INTO client_historial (rut_cliente, codigo_historial, responsable) VALUES (%s, %s, true)", (responsable, recordId))
 
-        for companion in companions:
-            self.__db.queryDB("INSERT INTO client_historial (rut_cliente, codigo_historial, responsable) VALUES (%s, %s, false)", (companion, recordId))
+        if companions:
+            for companion in companions:
+                self.__db.queryDB("INSERT INTO client_historial (rut_cliente, codigo_historial, responsable) VALUES (%s, %s, false)", (companion, recordId))
 
         self.__db.commit()
 

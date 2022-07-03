@@ -1,7 +1,7 @@
 import mysql.connector
 import os
 from dotenv import load_dotenv
-from utils import NotFoundError, NotCreatedErorr
+from utils import NotCreatedErorr
 
 
 class DB:
@@ -114,6 +114,7 @@ class DB:
         return self.__cursor.fetchall()
 
     def checkExistanse(self, query, args):
+        """Verifica la existencia de un objeto en la base de datos"""
         self.queryDB(query, args)
         return self.fetchOne()
 
@@ -126,6 +127,7 @@ class DB:
         self.__conn.commit()
 
     def getLastInsertedId(self):
+        """Retorna la primary key del ultimo elemento insertado en la base de datos"""
         return self.__cursor.lastrowid
 
     def queryDB(self, query: str, args: tuple=None):

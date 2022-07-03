@@ -19,33 +19,21 @@ class NotCompatibleError(Exception):
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if request.cookies.get("currentUserType") is None:
-            return make_response(jsonify({'error': 'usted no esta logeado en la aplicacion'}), 401)
-        return f(*args, **kwargs)
-    return decorated_function
+        if request.path == "/login":
+            return f(*args, **kwargs)
 
-def manager_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        currentUser = request.cookies.get("currentUserType")
-        if currentUser is None:
+        currentUserCookie = request.cookies.get("currentUserType")
+        path = request.path
+        if currentUserCookie is None:
             return make_response(jsonify({'error': 'usted no esta logeado en la aplicacion'}), 401)
 
-        if currentUser != 'GERENTE':
-            return make_response(jsonify({'error': 'usted no tiene permisos para realizar esta accion'}), 403)
+        if path != "login" and path not in ["/users", "/logout"]:
+            if currentUserCookie != "gerente":
+                return make_response(jsonify({'error': 'usted no tiene permisos para realizar esta accion'}), 403)
+       
+        elif path != "/login" and path != '/logout':
+            if currentUserCookie != "administrador":
+                return make_response(jsonify({'error': 'usted no tiene permisos para realizar esta accion'}), 403)
 
-        return f(*args, **kwargs)
-    return decorated_function
-
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        currentUser = request.cookies.get("currentUserType")
-        if currentUser is None:
-            return make_response(jsonify({'error': 'usted no esta logeado en la aplicaion'}), 401)
-
-        if currentUser != 'ADMIN':
-            return make_response(jsonify({'error': 'usted no tiene permisos para realizar esta accion'}), 403)
-            
         return f(*args, **kwargs)
     return decorated_function

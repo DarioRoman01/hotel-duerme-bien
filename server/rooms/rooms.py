@@ -1,8 +1,7 @@
-from datetime import datetime
 from typing import Dict
 from db import DB
 from clients import Client
-from utils import AlreadyExistsError, NotFoundError
+from utils import AlreadyExistsError, NotFoundError, NotCompatibleError
 
 class RoomHandler:
     def __init__(self, db: DB) -> None:
@@ -44,40 +43,24 @@ class RoomHandler:
         return records
 
     def getRoomsHistory(self):
-        self.__db.queryDB("SELECT * FROM historial_habitacion;")
+        self.__db.queryDB("SELECT * FROM historial_habitacion WHERE eliminada = false")
         raw_historys = self.__db.fetchAll()
         return self.appendClientsToRecord(raw_historys)
 
     def filterRoomHistory(self, filters: Dict):
-        query = "SELECT * FROM historial_habitacion WHERE "
-        first = False
-
+        query = "SELECT * FROM historial_habitacion WHERE eliminada = false"
         if filters.get('room') != None:
-            first = True
-            query += f"codigo_habitacion = '{filters.get('room')}'" 
+            query += f"AND codigo_habitacion = '{filters.get('room')}'" 
 
         if filters.get('state') != None:
-            if first:
-                query += f" AND activa = {filters.get('state')}"
-            else: 
-                first = True
-                query += f" activa = {filters.get('state')}" 
+            query += f" AND activa = {filters.get('state')}"
 
         if filters.get('start') != None:
-            if first:
-                query += f" AND fecha_asignacion >= '{filters.get('start')}'"
-            else:
-                first = True
-                query += f" fecha_asignacion >= '{filters.get('start')}'"
+            query += f" AND fecha_asignacion >= '{filters.get('start')}'"
 
         if filters.get('finish') != None:
-            if first:
-                query += f" AND fecha_termino <= '{filters.get('finish')}'"
-            else:
-                first = True
-                query += f" fecha_termino <= '{filters.get('finish')}'"
+            query += f" AND fecha_termino <= '{filters.get('finish')}'"
 
-        print(query)
         self.__db.queryDB(query)
         raw_records = self.__db.fetchAll()
         return self.appendClientsToRecord(raw_records)
@@ -126,7 +109,7 @@ class RoomHandler:
         SELECT c.rut, c.nombre, c.reputacion, ch.responsable FROM historial_habitacion
         INNER JOIN client_historial ch on historial_habitacion.codigo = ch.codigo_historial
         INNER JOIN cliente c on ch.rut_cliente = c.rut
-        WHERE codigo_habitacion = %s AND activa = TRUE;
+        WHERE codigo_habitacion = %s AND activa = TRUE AND eliminada = FALSE;
         """, (roomId, ))
 
         clients = self.__db.fetchAll()
@@ -136,50 +119,36 @@ class RoomHandler:
         return detail.toDict()
 
     def listAllObjects(self):
-        self.__db.queryDB("SELECT * FROM objeto_habitacion")
+        self.__db.queryDB("""
+        SELECT oh.codigo, oh.codigo_habitacion, oh.estado, oh.tipo FROM objeto_habitacion oh
+        inner join habitacion h on oh.codigo_habitacion = h.codigo
+        where h.eliminada = false;
+        """)
         return [RoomObject(obj[0], obj[1], obj[2], obj[3]).toDict() for obj in self.__db.fetchAll()]
 
     def filterObjects(self, filters: dict):
-        query = "SELECT * FROM objeto_habitacion"
-        first = False
+        query = """SELECT oh.codigo, oh.codigo_habitacion, oh.estado, oh.tipo FROM objeto_habitacion oh
+        inner join habitacion h on oh.codigo_habitacion = h.codigo
+        where h.eliminada = false"""
 
         if filters.get('room') != None:
-            first = True
-            query += f" WHERE codigo_habitacion = '{filters.get('room')}'"
+            query += f" AND oh.codigo_habitacion = '{filters.get('room')}'"
 
         if filters.get('type') != None:
-            if first:
-                query += f" AND tipo = '{filters.get('type')}'"
-            else:
-                first = True
-                query += f" WHERE tipo = '{filters.get('type')}'"
+            query += f" AND oh.tipo = '{filters.get('type')}'"
 
         if filters.get("max") != None or filters.get("min") != None:
             if filters.get("max") != None and filters.get("min") != None:
-                if first:
-                    query += f" AND estado BETWEEN {filters['min']} AND {filters['max']}"
-                else:
-                    first = True
-                    query += f" WHERE estado BETWEEN {filters['min']} AND {filters['max']}"
+                query += f" AND oh.estado BETWEEN {filters['min']} AND {filters['max']}"
             
             elif filters.get("min"):
-                if first:
-                    query += f" AND estado >= {filters['min']}"
-                else:
-                    first = True
-                    query += f" WHERE estado >= {filters['min']}"
+                query += f" AND oh.estado >= {filters['min']}"
 
             else:
-                if first:
-                    query += f" AND estado <= {filters['max']}"
-                else:
-                    first = True
-                    query += f" WHERE estado <= {filters['max']}"
+                query += f" AND oh.estado <= {filters['max']}"
 
         self.__db.queryDB(query)
         return [RoomObject(obj[0], obj[1], obj[2], obj[3]).toDict() for obj in self.__db.fetchAll()]
-
-
 
     def createRoomObject(self, room, state, type):
         if not self.__db.checkExistanse('SELECT * FROM habitacion WHERE codigo = %s', (room, )):
@@ -189,8 +158,11 @@ class RoomHandler:
         self.__db.commit()
 
     def deleteRoom(self, roomId):
-        if not self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (roomId, )):
+        room = self.__db.checkExistanse("SELECT estado FROM habitacion WHERE codigo = %s", (roomId, ))
+        if not room:
             raise NotFoundError(f'no se encontro una habitacion con el codigo {roomId}')
+        elif room[0] != 'libre':
+            raise NotCompatibleError(f'La habitacion {roomId} no puede ser eliminada porque esta siendo usada en este momento')
 
         self.__db.queryDB("UPDATE habitacion SET eliminada = true WHERE codigo = %s",  (roomId, ))
         self.__db.commit()
@@ -203,10 +175,14 @@ class RoomHandler:
         self.__db.commit()
 
     def deleteRoomRecord(self, recordId):
-        if not self.__db.checkExistanse("SELECT * historial_habitacion WHERE codigo = %s", (recordId, )):
+        record = self.__db.checkExistanse(f"SELECT activa, codigo_habitacion FROM historial_habitacion WHERE codigo = {recordId}", None)
+        if not record:
             raise NotFoundError(f'no se encontro un historial de habitacion con el codigo = {recordId}')
 
-        self.__db.queryDB("UPDATE historial_habitacion SET eliminado = true WHERE codigo = %s", (recordId,))
+        elif record[0] == 1:
+            raise NotCompatibleError(f"este historial no puede ser eliminado por que se encuentra activa en este momento")
+
+        self.__db.queryDB(f"UPDATE historial_habitacion SET eliminada = true WHERE codigo = {recordId}")
         self.__db.commit()
 
     def updateRoomObject(self, objectId, state, type):
@@ -216,18 +192,18 @@ class RoomHandler:
         self.__db.queryDB("UPDATE objeto_habitacion SET tipo = %s, estado = %s WHERE codigo = %s", (type, state, objectId))
         self.__db.commit()
 
-    def updateRoom(self, room, newCapacity, newOrientation):
+    def updateRoom(self, room, newCapacity, newOrientation, newState):
         if not self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (room, )):
             raise NotFoundError(f'No se ha encontrado una habitacion con el codigo {room}')
         
-        self.__db.queryDB("UPDATE habitacion SET orientacion = %s, capacidad = %s WHERE codigo = %s", (newOrientation, newCapacity, room))
+        self.__db.queryDB("UPDATE habitacion SET orientacion = %s, capacidad = %s, estado = %s WHERE codigo = %s", (newOrientation, newCapacity, newState, room))
         self.__db.commit()
 
     def updateRecord(self, recordId, state, finish):
-        if not self.__db.queryDB("SELECT * FROM historial_habitacion WHERE codigo = %s"):
+        if not self.__db.checkExistanse("SELECT * FROM historial_habitacion WHERE codigo = %s", (recordId, )):
             raise NotFoundError(f'no se encontro un registro con el codigo: {recordId}')
 
-        self.__db.queryDB("UPDATE historial_habitacion SET estado = %s, fecha_termino = %s WHERE codigo = %s", (state, finish, recordId))
+        self.__db.queryDB("UPDATE historial_habitacion SET activa = %s, fecha_termino = %s WHERE codigo = %s", (state, finish, recordId))
         self.__db.commit()
 
 class Room:

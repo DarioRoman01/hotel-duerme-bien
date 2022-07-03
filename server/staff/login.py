@@ -1,7 +1,7 @@
 from typing import Dict, List
 from db import DB
 import bcrypt
-from utils import AlreadyExistsError
+from utils import AlreadyExistsError, NotFoundError
 
 class User:
     def __init__(self, codigo, username, pwd, type) -> None:
@@ -42,26 +42,12 @@ class StaffHandler:
         self.__db.queryDB("SELECT codigo, username, password, type from usuario")
         return [User(u[0], u[1], u[2], u[3]).toDict() for u in self.__db.fetchAll()]
 
-    def modifyUser(self, username, newUsername, pwd):
-        """se encarga de la modificacion de los usuarios solo se permitira cambiar su nombre de usuario y contraseña"""
-
-        salt = bcrypt.gensalt()
-        hashPassword = bcrypt.hashpw(bytes(pwd, 'utf-8'), salt)
-        self.__db.queryDB("""
-            UPDATE usuarios
-            set username = %s, password = %s
-            WHERE username = %s 
-        """, (newUsername, hashPassword, username))
-        self.__db.commit()
-
-    def deleteUser(self, username):
+    def deleteUser(self, userId):
         """Elimina a un usuario de la base de datos"""
+        if not self.__db.checkExistanse("SELECT * FROM usuario WHERE codigo = %s", (userId, )):
+            raise NotFoundError(f'no se encontro un usuario con el codigo {userId}')
 
-        user = self.__db.queryDB("SELECT * FROM usuario WHERE username = %s", (username, ))
-        if user is None:
-            return "el usuario indicado no existe"
-
-        self.__db.queryDB("DELETE FROM usario WHERE codigo = %s", (user[0]))
+        self.__db.queryDB("DELETE FROM usuario WHERE codigo = %s", (userId,))
         self.__db.commit()
 
     def loginUser(self, username, pwd) -> User | None:
