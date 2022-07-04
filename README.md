@@ -40,6 +40,15 @@ then create a virtual enviroment with:
 ```
 python3 -m venv <your virtual enviroment name>
 ```
+to activate the enviroment on linux or mac run:
+```
+source <your env>/bin/activate
+```
+on windows:
+```
+<your env>\Scripts\activate
+```
+
 and install the dependencies:
 ```
 pip install -r requirements.txt
