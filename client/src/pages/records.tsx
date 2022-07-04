@@ -35,7 +35,7 @@ export const Records: React.FC = () => {
   const [companions, setCompanions] = useState([] as string[])
 
   useEffect(() => {
-    getRequest<RecordsResponse>("/records")
+    getRequest<RecordsResponse>("records")
     .then(r => callSetRows(r))
     .catch(err => console.log(err))
   }, [creation])

@@ -72,9 +72,11 @@ const headers = {
   "Content-Type": "application/json",
 }
 
+const url = 'https://haizza.codes/'
+
 // post request is a generic function to handle post request
 export async function postRequest<T>(body: Object, endpoint: string): Promise<T> {
-  const res = await fetch(`http://localhost:5000/${endpoint}`, {
+  const res = await fetch(`${url}${endpoint}`, {
     method: "post",
     body: JSON.stringify(body),
     headers: headers,
@@ -91,7 +93,7 @@ export async function postRequest<T>(body: Object, endpoint: string): Promise<T>
 
 // get request is a generic function to make get requests
 export async function getRequest<T>(endpoint: string): Promise<T> {
-  const response = await fetch(`http://localhost:5000/${endpoint}`, {
+  const response = await fetch(`${url}${endpoint}`, {
     credentials: 'include',
     headers: headers,
   })
@@ -104,8 +106,8 @@ export async function getRequest<T>(endpoint: string): Promise<T> {
 
 // genereci function to handle patch requests
 export async function patchRequest<T>(body: object, endpoint: string): Promise<T>  {
-  const res = await fetch(`http://localhost:5000/${endpoint}`, {
-    method: "patch",
+  const res = await fetch(`${url}${endpoint}`, {
+    method: "PATCH",
     body: JSON.stringify(body),
     headers: headers,
     credentials: 'include'
@@ -121,7 +123,7 @@ export async function patchRequest<T>(body: object, endpoint: string): Promise<T
 
 // generic function to handle delete requests
 export async function deleteRequest<T>(endpoint: string): Promise<T> {
-  const res = await fetch(`http://localhost:5000/${endpoint}`, {
+  const res = await fetch(`${url}${endpoint}`, {
     method: "delete",
     credentials: 'include',
     headers: headers,

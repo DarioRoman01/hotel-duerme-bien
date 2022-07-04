@@ -33,7 +33,7 @@ export const Rooms: React.FC = () => {
   const [newCapacity, setNewCapacity] = useState('');
 
   useEffect(() => {
-      getRequest<RoomsResponse>('/rooms')
+      getRequest<RoomsResponse>('rooms')
       .then(r => callSetRows(r))
       .catch(err => console.log(err))
   }, [creation]);

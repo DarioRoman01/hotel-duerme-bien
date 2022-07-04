@@ -29,7 +29,7 @@ export const Clients: React.FC = () => {
   
 
   useEffect(() => {
-    getRequest<CilentResponse>("/clients")
+    getRequest<CilentResponse>("clients")
     .then(c => callSetRows(c))
     .catch(err => console.log(err)) 
   }, [creation])

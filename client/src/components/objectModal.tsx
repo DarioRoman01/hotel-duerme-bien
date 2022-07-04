@@ -27,7 +27,7 @@ const DeleteObjectForm: React.FC<DeleteFormProps<RoomObject>> = ({object, onDele
   const handleSubmit = () => {
     setShow(false)
     deleteRequest<any>(`objects?objectId=${object.codigo}`)
-    .then(_ => onDelete)
+    .then(_ => onDelete())
     .catch(err => {
       setErr(err)
       setShow(true)
