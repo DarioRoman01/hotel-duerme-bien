@@ -17,6 +17,10 @@ class NotCompatibleError(Exception):
     """
 
 def login_required(f):
+    """
+    Funcion decorador que encanpsula todas las peticiones que requieran login ademas 
+    de verificar la ruta y definir que tipo de usuario tiene permisos sobre esa ruta
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if request.path == "/login":

@@ -114,13 +114,9 @@ class DB:
         return self.__cursor.fetchall()
 
     def checkExistanse(self, query, args):
-        """Verifica la existencia de un objeto en la base de datos"""
+        """Verifica la existencia de un objeto en la base de datos retornando el resultado del query"""
         self.queryDB(query, args)
         return self.fetchOne()
-
-    def checkCreation(self, result):
-        if not result.with_rows:
-            raise NotCreatedErorr("No se ha creado el objeto correctamente") 
 
     def commit(self):
         """realiza el commmit para que los cambios se vean reflejados en la base de datos"""

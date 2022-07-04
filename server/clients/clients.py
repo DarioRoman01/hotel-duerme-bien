@@ -4,6 +4,7 @@ from datetime import datetime
 from utils import AlreadyExistsError, NotCompatibleError, NotFoundError
 
 class Client:
+    """Representa a un cliente"""
     def __init__(self, rut, nombre, reputacion, tipo="no esta ospedado actualmente") -> None:
         self.__rut = rut
         self.__nombre = nombre
@@ -12,6 +13,7 @@ class Client:
         self.__habitacion = "no esta hospedado actualmente"
 
     def toDict(self) -> Dict:
+        """combierte la clase en un diccionario para ser parseado como un json"""
         return {
             'rut': self.__rut,
             'nombre': self.__nombre,
@@ -36,10 +38,12 @@ class Client:
         self.__habitacion = codigo_habitacion
 
 class ClientsHandler:
+    """Clients handler es la clase encargada de las operaciones CRUD de los clientes"""
     def __init__(self, db: DB) -> None:
         self.__db = db
 
     def createClient(self, rut: str, nombre: str):
+        """Crea un cliente en la base de datos y verifica que el rut no este registrado anteriormente"""
         if self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (rut,)):
             raise AlreadyExistsError(f'ya existe un cliente con el rut: {rut}')
 
@@ -47,6 +51,7 @@ class ClientsHandler:
         self.__db.commit()
 
     def updateClient(self, rut, reputation, name):
+        """actualiza la informacion de un cliente, solo se proda actualizar su reputacion y nombre"""
         if not self.__db.checkExistanse("SELECT * FROM cliente WHERE rut = %s", (rut,)):
             raise NotFoundError(f'no se encontro un usuario con el rut: {rut}')
 
@@ -54,9 +59,10 @@ class ClientsHandler:
         self.__db.commit()
 
     def deleteClient(self, rut):
+        """Elimina a un cliente de la base de datos, el cliente solo podra ser eliminado si no se encuentra hospedado actualmente en el hotel"""
         client = self.__db.checkExistanse("""select hh.activa, c.nombre from cliente c
-        inner join client_historial ch on c.rut = ch.rut_cliente
-        inner join historial_habitacion hh on ch.codigo_historial = hh.codigo
+        left join client_historial ch on c.rut = ch.rut_cliente
+        left join historial_habitacion hh on ch.codigo_historial = hh.codigo
         where c.rut = %s;""", (rut,))
 
         if not client:
@@ -69,6 +75,7 @@ class ClientsHandler:
         self.__db.commit()
 
     def validateRoomAsignment(self, room, responsable, companions):
+        """Valida los datos enviados por el cliente al momente de asignar una habitacion a un cliente"""
         roomData = self.__db.checkExistanse("SELECT * FROM habitacion WHERE codigo = %s", (room,))
         if not roomData:
             raise NotFoundError(f"No se encontro una habitacion con el codigo {room}")
@@ -104,8 +111,8 @@ class ClientsHandler:
                 where hh.activa = true and c.rut = %s;
                 """, (responsable, )):
                     raise NotCompatibleError(f'El cliente con rut {responsable} ya se encuentra hospedado en el hotel')
-
     def asingRoom(self, room: int, companions: list[str], start: str,  finish: str, responsable: str):
+        """asigna una habitaicon a un cliente creadon un historial en la habitaicon indicada"""
         self.validateRoomAsignment(room, responsable, companions)
         start_date = ""
 
@@ -130,6 +137,10 @@ class ClientsHandler:
         self.__db.commit()
 
     def listAllClients(self):
+        """
+        Lista a todos los clientes hospedados actualmente en la base datos y agrega informacion 
+        como si esta hospedado actualmente mostrando si es el pasajero resposable o un acompañante
+        """
         self.__db.queryDB("SELECT * FROM cliente where eliminado = false")
         raw_clients = self.__db.fetchAll()
         clients = []
@@ -151,6 +162,7 @@ class ClientsHandler:
         return clients
 
     def filterClients(self, filters: dict):
+        """Aplica filtros sobre el listado de clientes recibiendo los filtros como un diccionario"""
         query = "SELECT * FROM cliente WHERE eliminado = false"
         if filters.get("name") != None:
             query += f" AND nombre like '%{filters.get('name')}%'"
