@@ -1,7 +1,7 @@
 # Hotel Duerme Bien
 
 ## What is this? why?
-This is a project for my institute, we have to build an application for a hotel wich features things like controll over the clients currently hosted on the hotel, controll over the inventory of the rooms and the rooms its selfs and many other things.
+This is a project for my institute, we have to build an application for a hotel wich features things like controll over the clients currently hosted on the hotel, controll over the inventory of the rooms and the rooms its selfs and many other things. you can check the requirements here [project requirements document](https://github.com/DarioRoman01/hotel-duerme-bien/wiki/Project-requirements) keep in mind that the file is in spanish.
 
 ## How to run it?
 requirements:
@@ -40,6 +40,15 @@ then create a virtual enviroment with:
 ```
 python3 -m venv <your virtual enviroment name>
 ```
+to activate the enviroment on linux or mac run:
+```
+source <your env>/bin/activate
+```
+on windows:
+```
+<your env>\Scripts\activate
+```
+
 and install the dependencies:
 ```
 pip install -r requirements.txt
