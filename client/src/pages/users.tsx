@@ -51,7 +51,7 @@ export const Users: React.FC = () => {
     }
 
     if (pwd.length <= 6) {
-      setErr('la contraseña debe ser almenos de 6 caracteres')
+      setErr('la contraseña debe ser almenos de 7 caracteres')
       setShow(true)
       return
     }

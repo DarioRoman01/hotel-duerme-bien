@@ -53,6 +53,13 @@ export const Clients: React.FC = () => {
       return
     }
 
+    const exp = /^(\d{1,3}(?:\.\d{1,3}){2}-[\dkK])$/
+    if (!exp.test(newRut)) {
+      setErr('el rut debe ser ingresado con puntos y guion')
+      setShow(true)
+      return
+    }
+
     setShow(false)
     const body = { name: newName, rut: newRut }
     postRequest<any>(body, 'clients/create')

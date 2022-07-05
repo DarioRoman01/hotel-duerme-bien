@@ -59,6 +59,11 @@ export const Rooms: React.FC = () => {
       return
     }
 
+    if(Number.isNaN(parseInt(newCapacity))) {
+      setErr("La capacidad debe ser un numero")
+      setShow(true)
+    }
+
     setShow(false)
     const body = {
       code: newCodigo,
