@@ -1,3 +1,4 @@
+// represents a room
 export type Room = {
   codigo: string,
   capacidad: number,
@@ -6,10 +7,12 @@ export type Room = {
   estado_i: number
 }
 
+// represents the response send by server of a list of rooms
 export type RoomsResponse = {
   rooms: Room[]
 }
 
+// represents a client
 export type Client = {
   rut: string,
   nombre: string,
@@ -18,10 +21,12 @@ export type Client = {
   habitacion: string,
 }
 
+// represents the response send by server of a list of clients
 export type CilentResponse = {
   clients: Client[]
 }
 
+// represents a room record
 export type Record = {
   activa: boolean,
   clientes: Client[],
@@ -31,21 +36,25 @@ export type Record = {
   fecha_termino: string
 }
 
+// represents the response send by server of a list of rooms records
 export type RecordsResponse = {
   records: Record[]
 }
 
+// represents a room object in the detail 
 type RoomDetailObject = {
   state: string,
   total: number,
   type: string
 }
 
+// represents the room detail
 export type RoomDetail = {
   clients: Client[]
   objects: RoomDetailObject[] 
 }
 
+// represents a room object
 export type RoomObject = {
   codigo: number,
   habitacion: string,
@@ -53,25 +62,30 @@ export type RoomObject = {
   tipo: string
 }
 
+// represents the response send by server of a list of rooms objects
 export type RoomObjectsResponse = {
   objects: RoomObject[]
 }
 
+// represents a user
 export type User = {
   codigo: number,
   type: string,
   username: string
 }
 
+// represents the response send by server of a list of users
 export type UsersResponse = {
   users: User[]
 }
 
+// common headers in the request
 const headers = {
   Accept: "application/json",
   "Content-Type": "application/json",
 }
 
+// url where the api is hosted
 const url = 'https://haizza.codes/'
 
 // post request is a generic function to handle post request

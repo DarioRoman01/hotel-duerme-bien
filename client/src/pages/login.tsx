@@ -11,6 +11,8 @@ export const Login: React.FC = () => {
   const [failMessage, setFailMessage] = useState('');
   const navigate = useNavigate();
 
+
+  // send the login request to the server
   const handleSubmit = () => {
     postRequest<User>({username: username, password: pwd}, 'login')
     .then(user => {

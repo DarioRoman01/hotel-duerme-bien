@@ -2,7 +2,7 @@ import React, {useState, useEffect } from "react";
 import { getRequest, CilentResponse, postRequest, Client } from "../requests/requests";
 import { Table } from "../components/table";
 import { FloatingLabelInput } from "../components/floatingLabel";
-import { checkValues } from "./utils";
+import { checkRut, checkValues } from "./utils";
 import { Select } from "../components/select";
 import { FormWrapper, LayaoutWrapper } from "../components/wrappers";
 import { ErrorAlert } from "../components/error";
@@ -53,8 +53,7 @@ export const Clients: React.FC = () => {
       return
     }
 
-    const exp = /^(\d{1,3}(?:\.\d{1,3}){2}-[\dkK])$/
-    if (!exp.test(newRut)) {
+    if (!checkRut(newRut)) {
       setErr('el rut debe ser ingresado con puntos y guion')
       setShow(true)
       return

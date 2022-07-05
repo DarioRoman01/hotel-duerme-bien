@@ -6,6 +6,7 @@ interface tableProps {
   
 }
 
+// table component to have the columns and rows as props 
 export const Table: React.FC<tableProps> = (props) => {
   const trStyle = {borderRadius: "20px"}
   return (

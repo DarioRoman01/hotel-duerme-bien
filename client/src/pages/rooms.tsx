@@ -38,6 +38,7 @@ export const Rooms: React.FC = () => {
       .catch(err => console.log(err))
   }, [creation]);
   
+  // make the request to filter the rooms and validate inputs
   const handleFilterSubmit = () => {
     const filters = {
       'estado': checkValues(estado),
@@ -52,6 +53,7 @@ export const Rooms: React.FC = () => {
     .catch(err => console.log(err))
   }
 
+  // validate the data to create a room and send the requests to the server
   const handleCreationSubmit = () => {
     if (!checkValues(newCodigo) || !checkValues(newCapacity) || !checkValues(newOrientacion)) {
       setErr('Todos los campos son requeridos')
@@ -62,6 +64,7 @@ export const Rooms: React.FC = () => {
     if(Number.isNaN(parseInt(newCapacity))) {
       setErr("La capacidad debe ser un numero")
       setShow(true)
+      return
     }
 
     setShow(false)
@@ -79,13 +82,13 @@ export const Rooms: React.FC = () => {
     })
   }
 
+  // handle the clikc in the table buttons defining the action and room 
+  // the action will allow to know wich modal show
   const handleActionClick = (r: Room, action: string) => {
     setAction(action)
     setRoom(r)
     setVisible(true)
   }
-
-  const handleUpdate = () => setCreation(!creation);
 
   const callSetRows = (r: RoomsResponse) => {
     setRows(r.rooms.map(room => (
@@ -108,7 +111,7 @@ export const Rooms: React.FC = () => {
 
   return (
     <LayaoutWrapper 
-      modal={<RoomModal onUpdate={handleUpdate} handleClose={() => setVisible(false)} object={room} visible={visible} action={action} />} 
+      modal={<RoomModal onUpdate={() => setCreation(!creation)} handleClose={() => setVisible(false)} object={room} visible={visible} action={action} />} 
       customTable={<Table columns={["codigo", "capacidad", "orientacion", "estado", "estado inmueble", "acciones"]} rows={rows} />}
     >
       <div className="mb-3 text-center">

@@ -36,6 +36,8 @@ export const Objects: React.FC = () => {
     .catch(err => console.log(err))
   }, [creation])
 
+
+  // validate the data to create a object and send the request to the server
   const handleCreationSubmit = () => {
     const validObjectTypes = ['cama', 'espejo', 'velador', 'televisor', 'silla', 'control', 'aire_acondicionado', 'sabanas', 'frasadas', 'toallas', 'almohadas', 'nevera', 'caja_fuerte', 'telefono_servicio']
     if (!checkValues(newRoom) && !checkValues(newTipo) && !checkValues(newState)) {
@@ -80,12 +82,15 @@ export const Objects: React.FC = () => {
 
   }
 
+  // handle the clikc in the table buttons defining the action and room object 
+  // the action will allow to know wich modal show
   const handleActionClick = (obj: RoomObject, action: string) => {
     setAction(action)
     setObj(obj)
     setVisible(true)
   }
 
+  // set the table body
   const callSetRows = (r: RoomObjectsResponse) => {
     setRows(r.objects.map(obj => (
       <tr key={obj.codigo} className="bg-contrast text-secondary rounded-md">
@@ -101,6 +106,8 @@ export const Objects: React.FC = () => {
     )))
   }
 
+
+  // send the filter request to the server
   const handleFilterSubmit = () => {
     const filters = {
       room: checkValues(room),

@@ -8,7 +8,7 @@ import { Records } from './pages/records'
 import { Objects } from './pages/objects'
 import { Users } from './pages/users';
 
-
+// entry point of the frontend app this component is use only to define the routes
 function App() {
   return (
     <div className="App bg-primary min-h-screen">

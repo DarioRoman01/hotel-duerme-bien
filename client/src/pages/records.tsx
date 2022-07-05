@@ -3,7 +3,7 @@ import { Table } from "../components/table";
 import { getRequest, RecordsResponse, postRequest, Record } from "../requests/requests";
 import { DatePicker } from "../components/datePickers";
 import { FloatingLabelInput } from "../components/floatingLabel";
-import { checkValues } from "./utils";
+import { checkRut, checkValues } from "./utils";
 import { Select } from "../components/select";
 import { FormWrapper, LayaoutWrapper } from "../components/wrappers";
 import { InputsList } from "../components/inputList";
@@ -40,6 +40,8 @@ export const Records: React.FC = () => {
     .catch(err => console.log(err))
   }, [creation])
 
+
+  // make the filter request to the server
   const handleSubmit = () => {
     const filters = {
       start: checkValues(startDate),
@@ -53,20 +55,39 @@ export const Records: React.FC = () => {
     .catch(err => console.log(err))
   }
 
+  // validate the data to create a record and send the request to the server
   const handleCreationSubmit = () => {
+    setShow(false)
     if (!checkValues(newResponsable) || !checkValues(newRoom) || !checkValues(newFinishDate)) {
       setErr('los campos responsable, fecha termino y habitacion son obligatorios');
       setShow(true)
       return
     }
 
-    setShow(false)
+
+    if (!checkRut(newResponsable)) {
+      setErr('el rut debe ser ingresado con puntos y guion')
+      setShow(true)
+      return
+    }
+
+    let ruts = companions.length === 0 || (companions.length === 1 && companions[0] === '') ? null : companions;
+    if (ruts) {
+      for (let rut of ruts) {
+        if(!checkRut(rut)) {
+          setErr('el rut debe ser ingresado con puntos y guion')
+          setShow(true)
+          return
+        }
+      }
+    }
+
     const body = {
       responsable: newResponsable,
       room: newRoom,
       start: checkValues(newStartDate),
       finish: newFinishDate,
-      companions: companions.length === 0 || (companions.length === 1 && companions[0] === '') ? null : companions
+      companions: ruts
     }
 
     postRequest<any>(body, 'records/create')
@@ -77,12 +98,16 @@ export const Records: React.FC = () => {
     })
   }
 
+  // handle the clikc in the table buttons defining the action and record 
+  // the action will allow to know wich modal show
   const handleActionClick = (r: Record, action: string) => {
     setAction(action)
     setRecord(r)
     setVisible(true)
   }
 
+
+  // set the table body using rows as state
   const callSetRows = (r: RecordsResponse) => {
      setRows(r.records.map(record => (
       <tr key={record.codigo} className="bg-contrast text-secondary rounded-md">
@@ -91,8 +116,8 @@ export const Records: React.FC = () => {
         <td className="p-3 text-center">{record.activa ? "activa" : 'no activa'}</td>
         <td className="p-3 text-center">{record.fecha_asignacion}</td>
         <td className="p-3 text-center">{record.fecha_termino}</td>
-        <td className="p-3 text-center">{record.clientes.filter(c => c.responsable == 1).map(c => <p>{c.nombre}</p>)}</td>
-        <td className="p-3 text-center">{record.clientes.filter(c => c.responsable == 0).map(c => <p>{c.nombre}</p>)}</td>
+        <td className="p-3 text-center">{record.clientes.filter(c => c.responsable == 1).map(c => <p key={c.rut}>{c.nombre}</p>)}</td>
+        <td className="p-3 text-center">{record.clientes.filter(c => c.responsable == 0).map(c => <p key={c.rut}>{c.nombre}</p>)}</td>
         <td className="p-3 flex mt-1 justify-center">
           <button onClick={_ => handleActionClick(record, 'update')} className="mx-2"><Icon icon='fa6-solid:pen-clip'/></button>
           <button onClick={_ => handleActionClick(record, 'delete')} className="ml-2"><Icon icon='bi:trash-fill'/></button>

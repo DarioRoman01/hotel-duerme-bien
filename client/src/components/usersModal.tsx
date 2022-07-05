@@ -4,6 +4,7 @@ import { ErrorAlert } from './error';
 import { ModalProps } from './utils';
 import { ModalWrapper } from './wrappers';
 
+// component to handle the users modal wich only has the delete option
 export const UsersModal: React.FC<ModalProps<User>> = ({handleClose, object, onUpdate, visible}) => {
   const [err, setErr] = useState('');
   const [show, setShow] = useState(false);

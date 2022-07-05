@@ -43,6 +43,7 @@ export const Users: React.FC = () => {
     )))
   }
 
+  // validate data to create a user and send the request to the server
   const handleCreationSubmit = () => {
     if(pwd !== pwdConfirm) {
       setErr('Las contraseñas no coinciden!')

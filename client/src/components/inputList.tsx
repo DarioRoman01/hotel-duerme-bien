@@ -32,7 +32,7 @@ export const InputsList: React.FC<InputsListProps> = ({onChange}) => {
   return (
     <div className="mb-3 min-w-full ">
         {companions.map((companion, idx) => (
-        <div className="flex">
+        <div key={idx} className="flex">
           <div className="w-[75%] mr-5">
             <div className="mb-3">
               <FloatingLabelInput value={companion.rut} placeholder="Acompañante" type="text" onChange={(e) => handleCompanionChange(e, idx)} />

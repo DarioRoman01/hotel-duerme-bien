@@ -37,6 +37,12 @@ const RoomUpdateModal: React.FC<UpdateFormProps<Room>> = ({object, onUpdate}) =>
 
   const handleUpdateSubmit = () => {
     setShow(false)
+
+    if (Number.isNaN(parseInt(capacity))) {
+      setErr('La capacidad debe ser un numero')
+      setShow(true)
+    }
+
     const body = { room: object.codigo, capacity: capacity, orientation: orientation, state: state }
     patchRequest<any>(body, 'rooms')
     .then(_ => onUpdate())
@@ -51,7 +57,7 @@ const RoomUpdateModal: React.FC<UpdateFormProps<Room>> = ({object, onUpdate}) =>
       <FloatingLabelInput placeholder="capacidad" type="text" value={capacity} onChange={(e) => setCapacity(e.currentTarget.value)} />
     </div>
     <div className="col-span-12 p-5">
-      <Select selected={object.orientacion} handleChange={e => setOrientation(e.target.value)} options={[['norte', 'Norte'], ['sur', 'Sur'], ['este', 'Este'], ['oeste', 'Oeste']]} />
+      <Select selected={orientation} handleChange={e => setOrientation(e.target.value)} options={[['norte', 'Norte'], ['sur', 'Sur'], ['este', 'Este'], ['oeste', 'Oeste']]} />
     </div>
     <div className="col-span-12 p-5">
       <Select selected={object.estado} handleChange={e => setState(e.target.value)} options={[["libre", "Libre"], ["ocupada", "Ocupada"], ["reservada", "Reservada"]]} />
@@ -141,14 +147,14 @@ const RoomDetailModal: React.FC<{room: Room}> = ({room}) => {
     </div>
     {
       isFetching ? <ModalItemWrapper children={Loader} /> : 
-      detail.objects.map(obj => <ModalCard text={`${obj.type}s: ${obj.total} estado: ${obj.state}`} />)
+      detail.objects.map((obj, idx) => <ModalCard key={idx} text={`${obj.type}s: ${obj.total} estado: ${obj.state}`} />)
     }
     <div className="col-span-12 p-4">
       <h2 className="text-xl">CLientes Hospedados actualmente</h2>
     </div>
     {
       isFetching ? <ModalItemWrapper children={Loader} /> : 
-      detail.clients.length > 0 ? detail.clients.map(client => <ModalCard text={`nombre: ${client.nombre} rut: ${client.rut}`} />) : 
+      detail.clients.length > 0 ? detail.clients.map(client => <ModalCard key={client.rut} text={`nombre: ${client.nombre} rut: ${client.rut}`} />) : 
       <ModalCard text="No hay clientes hospedados actualmente en esta habitacion" />
     }
   </>)

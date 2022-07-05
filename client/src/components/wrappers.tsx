@@ -2,6 +2,7 @@ import { Icon } from "@iconify/react";
 import React from "react";
 import { Navbar } from "./navbar";
 
+// wrapper to have a uniform format between inputs in forms
 export const FormWrapper: React.FC<{children: React.ReactElement}> = (props) => {
   return (
     <div className="mb-3 min-w-full">
@@ -10,6 +11,7 @@ export const FormWrapper: React.FC<{children: React.ReactElement}> = (props) => 
   )
 }
 
+// wrapper to reduce the lines of code in the modal
 export const ModalItemWrapper: React.FC<{children: React.FC}> = (props) => {
   return (
     <div className="col-span-12 p-4 flex justify-center">
@@ -24,6 +26,7 @@ interface LayaoutProps {
   modal?: React.ReactElement
 }
 
+// wrap the children components to make a uniform layaout in all the pages
 export const LayaoutWrapper: React.FC<LayaoutProps> = ({children, customTable, modal=null}) => {
   return (
     <div className="grid grid-cols-12 grid-rows-12 min-w-full">
@@ -50,6 +53,7 @@ interface ModalWrapperProps {
   handleClose: any
 }
 
+// wraps the children elements to convert it to a modal
 export const ModalWrapper: React.FC<ModalWrapperProps> = ({visible, children, title, handleClose}) => {
   return (
     <div className={"modal fixed top-0 left-0 z-40 w-full h-full " + (visible ? "flex justify-center items-center" : "hidden")}>

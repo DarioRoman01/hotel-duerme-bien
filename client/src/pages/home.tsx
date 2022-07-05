@@ -5,8 +5,9 @@ import { getRequest } from "../requests/requests";
 export const Home: React.FC = () => {
   const currentUserType = localStorage.getItem('currentUserType')
   const navigate = useNavigate();
-  if (!currentUserType) navigate('/login')
+  if (!currentUserType) navigate('/')
 
+  // make the logout request to the server
   const logout = () => {
     getRequest<any>('logout')
     .then(_ => {
