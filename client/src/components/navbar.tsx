@@ -1,11 +1,16 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";
+import { User } from "../requests/requests";
 
 export const Navbar = () => {
-  const currentUserType = localStorage.getItem('currentUserType')
-	const [navbarOpen, setNavbarOpen] = React.useState(false);
   const navigate = useNavigate()
+  const json = localStorage.getItem("currentUser");
+  if (!json) navigate('/');
+  
+  const user: User = JSON.parse(json!);
+
+	const [navbarOpen, setNavbarOpen] = React.useState(false);
   
   return (
     <>
@@ -13,14 +18,14 @@ export const Navbar = () => {
         <div className="container px-4 mx-auto flex flex-wrap items-center justify-between">
           <div className={"lg:flex  items-center" + (navbarOpen ? " flex" : " hidden")} id="example-navbar-danger">
             <ul className="flex flex-col lg:flex-row list-none lg:ml-auto">
-              {currentUserType === 'administrador' && (
+              {user.type === 'administrador' && (
                 <li className="nav-item">
                   <button className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-secondary hover:opacity-75" onClick={() => navigate("/users")}>
                     <i className="text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2 font-bold">Usuarios</span>
                   </button>
                 </li>
               )}
-              {currentUserType === 'gerente' && (<>
+              {user.type === 'gerente' && (<>
                 <li className="nav-item">
                   <button className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-secondary hover:opacity-75" onClick={() => navigate("/clients")}>
                     <i className="square text-lg leading-lg text-secondary opacity-75"></i><span className="ml-2 font-bold">Clientes</span>

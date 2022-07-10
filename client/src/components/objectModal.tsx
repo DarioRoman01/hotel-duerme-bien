@@ -89,10 +89,10 @@ const UpdateObjectForm: React.FC<UpdateFormProps<RoomObject>> = ({object, onUpda
 
   return (<>
     <div className="col-span-12 p-5">
-      <FloatingLabelInput onChange={e => setState(e.currentTarget.value)} placeholder="Estado" type="text" value={state} />
+      <FloatingLabelInput id="updateState" onChange={e => setState(e.currentTarget.value)} placeholder="Estado" type="text" value={state} />
     </div>
     <div className="col-span-12 p-5">
-      <FloatingLabelInput onChange={e => setTipo(e.currentTarget.value)} placeholder="Tipo Objeto" type="text" value={tipo} />
+      <FloatingLabelInput id="updateType" onChange={e => setTipo(e.currentTarget.value)} placeholder="Tipo Objeto" type="text" value={tipo} />
     </div>
     <div className="col-span-12 p-5">
       <button onClick={handleSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">

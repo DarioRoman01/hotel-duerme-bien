@@ -123,8 +123,8 @@ def createClient():
     """se encarga de manejar la peticion de la creacion de clientes"""
     try:
         body = request.get_json()
-        clientsHandler.createClient(body.get('rut'), body.get('name'))
-        return make_response(jsonify({'ok': 'ok'}), 200)
+        client = clientsHandler.createClient(body.get('rut'), body.get('name'))
+        return make_response(jsonify(client), 200)
     except AlreadyExistsError as err:
         return make_response(jsonify({'error': str(err)}), 400)
     except:
@@ -135,8 +135,8 @@ def createRoom():
     """se encarga de manejar la peticion de la creacion de habitaciones"""
     try:
         body = request.get_json()
-        roomHandler.createRoom(body['code'], body['capacity'], body['orientation'])
-        return make_response(jsonify({'ok': 'ok'}), 200)
+        room = roomHandler.createRoom(body['code'], body['capacity'], body['orientation'])
+        return make_response(jsonify(room), 200)
     except AlreadyExistsError as err:
         return make_response(jsonify({'error': str(err)}), 400)
     except:

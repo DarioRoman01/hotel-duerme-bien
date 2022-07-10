@@ -49,6 +49,7 @@ class ClientsHandler:
 
         self.__db.queryDB("INSERT INTO cliente (rut, nombre, reputacion, eliminado) VALUES (%s, %s, 100, false)", (rut, nombre))
         self.__db.commit()
+        return Client(rut, nombre, 100).toDict()
 
     def updateClient(self, rut, reputation, name):
         """actualiza la informacion de un cliente, solo se proda actualizar su reputacion y nombre"""

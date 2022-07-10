@@ -54,7 +54,7 @@ const RoomUpdateModal: React.FC<UpdateFormProps<Room>> = ({object, onUpdate}) =>
 
   return (<>
     <div className="col-span-12 p-5">
-      <FloatingLabelInput placeholder="capacidad" type="text" value={capacity} onChange={(e) => setCapacity(e.currentTarget.value)} />
+      <FloatingLabelInput id="updateCapacity" placeholder="capacidad" type="text" value={capacity} onChange={(e) => setCapacity(e.currentTarget.value)} />
     </div>
     <div className="col-span-12 p-5">
       <Select selected={orientation} handleChange={e => setOrientation(e.target.value)} options={[['norte', 'Norte'], ['sur', 'Sur'], ['este', 'Este'], ['oeste', 'Oeste']]} />

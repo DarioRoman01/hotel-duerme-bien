@@ -47,10 +47,10 @@ const UpdateClientForm: React.FC<UpdateFormProps<Client>> = ({object, onUpdate})
 
   return (<>
     <div className="col-span-12 p-5">
-        <FloatingLabelInput onChange={e => setReputation(e.currentTarget.value)} placeholder="Reputacion" type="text" value={reputation} />
+        <FloatingLabelInput id="updateReputation" onChange={e => setReputation(e.currentTarget.value)} placeholder="Reputacion" type="text" value={reputation} />
       </div>
       <div className="col-span-12 p-5">
-        <FloatingLabelInput onChange={e => setName(e.currentTarget.value)} placeholder="Nombre" type="text" value={name} />
+        <FloatingLabelInput id="updateName" onChange={e => setName(e.currentTarget.value)} placeholder="Nombre" type="text" value={name} />
       </div>
       <div className="col-span-12 p-5">
         <button onClick={handleSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">

@@ -75,9 +75,9 @@ export const Users: React.FC = () => {
       <div className="mb-3 text-center">
         <label className="text-3xl text-secondary text-bold">Agregar Usuario</label>
       </div>
-      <FormWrapper children={<FloatingLabelInput type="text" placeholder="Nombre" onChange={e => setUsername(e.currentTarget.value)} />} />
-      <FormWrapper children={<FloatingLabelInput type="password" placeholder="Contraseña" onChange={e => setPwd(e.currentTarget.value)} />} />
-      <FormWrapper children={<FloatingLabelInput type="password" placeholder="Confirmacion contraseña" onChange={e => setPwdConfirm(e.currentTarget.value)} />} />
+      <FormWrapper children={<FloatingLabelInput id="name" type="text" placeholder="Nombre" onChange={e => setUsername(e.currentTarget.value)} />} />
+      <FormWrapper children={<FloatingLabelInput id="pwd" type="password" placeholder="Contraseña" onChange={e => setPwd(e.currentTarget.value)} />} />
+      <FormWrapper children={<FloatingLabelInput id="pwdconfirmation" type="password" placeholder="Confirmacion contraseña" onChange={e => setPwdConfirm(e.currentTarget.value)} />} />
       <div className="mb-3 min-w-full">
         <button onClick={handleCreationSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Agregar

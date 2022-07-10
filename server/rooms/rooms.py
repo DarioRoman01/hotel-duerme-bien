@@ -14,6 +14,7 @@ class RoomHandler:
 
         self.__db.queryDB("INSERT INTO habitacion(codigo, capacidad, orientacion) VALUES (%s ,%s, %s)", (code, capacity, orientation))
         self.__db.commit()
+        return Room(code, capacity, orientation, 'libre', None).toDict()
 
     def listAllRooms(self):
         """lista todas las habitaciones que no hayan sido eliminadas en la base de datos"""

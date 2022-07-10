@@ -25,7 +25,6 @@ export const Rooms: React.FC = () => {
   const [estado, setEstado] = useState('');
   const [orientacion, setOrientacion] = useState('');
   const [capacity, setCapacity] = useState('');
-  
 
   // creation inputs state
   const [newCodigo, setNewCodigo] = useState('');
@@ -37,7 +36,7 @@ export const Rooms: React.FC = () => {
       .then(r => callSetRows(r))
       .catch(err => console.log(err))
   }, [creation]);
-  
+
   // make the request to filter the rooms and validate inputs
   const handleFilterSubmit = () => {
     const filters = {
@@ -119,7 +118,7 @@ export const Rooms: React.FC = () => {
       </div>
       <FormWrapper children={<Select handleChange={(e) => setEstado(e.target.value)} options={[['', 'Estado'], ['ocupada', 'Ocupada'], ['reservada', 'Reservada'], ['libre', 'Libre']]}/>} />
       <FormWrapper children={<Select handleChange={e => setOrientacion(e.target.value)} options={[['', 'Orientacion'], ['norte', 'Norte'], ['sur', 'Sur'], ['este', 'Este'], ['oeste', 'Oeste']]} />} />
-      <FormWrapper children={<FloatingLabelInput placeholder="capacidad" type='text' onChange={e => setCapacity(e.currentTarget.value)} />} />
+      <FormWrapper children={<FloatingLabelInput id="capacity" placeholder="capacidad" type='text' onChange={e => setCapacity(e.currentTarget.value)} />} />
       <div className="min-w-full text-center mb-8">
         <label className="mt-3 text-xl text-secondary font-bold">Estado Inventario</label>
         <MultiRangeSlider min={minVal} max={maxVal} onChange={({ min, max }: { min: number; max: number }) => { 
@@ -135,8 +134,8 @@ export const Rooms: React.FC = () => {
       <div className="my-3 text-center">
         <label className="text-3xl text-secondary font-bold">Agregar Habitacion</label>
       </div>
-      <FormWrapper children={<FloatingLabelInput placeholder="Codigo" type='text' onChange={e => setNewCodigo(e.currentTarget.value)} />} />
-      <FormWrapper children={<FloatingLabelInput placeholder="Capacidad" type='text' onChange={e => setNewCapacity(e.currentTarget.value)} />} />
+      <FormWrapper children={<FloatingLabelInput id="code" placeholder="Codigo" type='text' onChange={e => setNewCodigo(e.currentTarget.value)} />} />
+      <FormWrapper children={<FloatingLabelInput id="newCapacity" placeholder="Capacidad" type='text' onChange={e => setNewCapacity(e.currentTarget.value)} />} />
       <FormWrapper children={<Select handleChange={e => setNewOrientacion(e.target.value)} options={[['', 'Orientacion'], ['norte', 'Norte'], ['sur', 'Sur'], ['este', 'Este'], ['oeste', 'Oeste']]}/>} />
       <div className="mb-3 min-w-full">
         <button onClick={handleCreationSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">

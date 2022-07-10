@@ -130,8 +130,8 @@ export const Objects: React.FC = () => {
       <div className="mb-3 text-center">
         <label className="text-3xl text-secondary font-bold">Filtros</label>
       </div>
-      <FormWrapper children={<FloatingLabelInput onChange={e => setRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
-      <FormWrapper children={<FloatingLabelInput onChange={e => setTipo(e.currentTarget.value)} placeholder="Tipo Objeto" type="text"/>} />
+      <FormWrapper children={<FloatingLabelInput id="room" onChange={e => setRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
+      <FormWrapper children={<FloatingLabelInput id="objectType" onChange={e => setTipo(e.currentTarget.value)} placeholder="Tipo Objeto" type="text"/>} />
       <div className="min-w-full text-center mb-8">
         <label className="mt-3 text-xl text-secondary font-bold">Estado Inventario</label>
         <MultiRangeSlider min={minVal} max={maxVal} onChange={({ min, max }: { min: number; max: number }) => { 
@@ -147,9 +147,9 @@ export const Objects: React.FC = () => {
       <div className="mb-3 text-center">
         <label className="text-3xl text-secondary font-bold">Agregar objeto</label>
       </div>
-      <FormWrapper children={<FloatingLabelInput onChange={e => setNewRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
-      <FormWrapper children={<FloatingLabelInput onChange={e => setNewTipo(e.currentTarget.value)} placeholder="Tipo Objeto" type="text"/>} />
-      <FormWrapper children={<FloatingLabelInput onChange={e => setNewState(e.currentTarget.value)} placeholder="Estado" type="text"/>} />
+      <FormWrapper children={<FloatingLabelInput id="roomObjet" onChange={e => setNewRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
+      <FormWrapper children={<FloatingLabelInput id="objType" onChange={e => setNewTipo(e.currentTarget.value)} placeholder="Tipo Objeto" type="text"/>} />
+      <FormWrapper children={<FloatingLabelInput id="state" onChange={e => setNewState(e.currentTarget.value)} placeholder="Estado" type="text"/>} />
       <div className="mb-3 min-w-full">
         <button onClick={handleCreationSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
           Agregar

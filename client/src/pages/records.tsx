@@ -138,7 +138,7 @@ export const Records: React.FC = () => {
       <FormWrapper children={<Select handleChange={e => setState(e.target.value)} options={[['', 'Estado'], ['1', 'Activa'], ['0', 'No activa']]} />} />
       <FormWrapper children={<DatePicker type="date" onChange={e => setStartDate(e.target.value)} label="Fecha inicio" />} />
       <FormWrapper children={<DatePicker type="date" onChange={e => setFinishDate(e.target.value)} label="Fecha termino" />} />
-      <FormWrapper children={<FloatingLabelInput onChange={e => setRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
+      <FormWrapper children={<FloatingLabelInput id="roomFilter" onChange={e => setRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
       
       <div className="min-w-full">
         <button onClick={handleSubmit} className="w-full text-contrast bg-secondary hover:bg-secondary text-last font-bold py-2 px-4 rounded">
@@ -148,8 +148,8 @@ export const Records: React.FC = () => {
       <div className="my-3 text-center">
         <label className="text-3xl text-secondary font-bold">Agregar Registro</label>
       </div>
-      <FormWrapper children={<FloatingLabelInput onChange={e => setNewRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
-      <FormWrapper children={<FloatingLabelInput onChange={e => setNewResponsable(e.currentTarget.value)} placeholder="Responsable" type="text"/>} />
+      <FormWrapper children={<FloatingLabelInput id="recordRoom" onChange={e => setNewRoom(e.currentTarget.value)} placeholder="Habitacion" type="text"/>} />
+      <FormWrapper children={<FloatingLabelInput id="responsible" onChange={e => setNewResponsable(e.currentTarget.value)} placeholder="Responsable" type="text"/>} />
       <FormWrapper children={<DatePicker type="datetime-local" onChange={e => setNewStartDate(e.target.value.replace('T', ' '))} label="Fecha inicio" />} />
       <FormWrapper children={<DatePicker type="datetime-local" onChange={e => setNewFinishDate(e.target.value.replace('T', ' '))} label="Fecha termino" />} />
       <InputsList onChange={setCompanions}/>
